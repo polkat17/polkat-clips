@@ -8,7 +8,8 @@
     "build": "remotion render",
     "upgrade": "remotion upgrade",
     "fetch:pexels": "node --env-file=.env scripts/fetch-pexels-clips.mjs",
-    "fetch:broll": "node --env-file=.env scripts/fetch-broll-manifest.mjs"
+    "fetch:broll": "node --env-file=.env scripts/fetch-broll-manifest.mjs",
+    "fetch:list-story-broll": "node --env-file=.env scripts/fetch-list-story-broll.mjs"
   },
   "dependencies": {
     "react": "18.3.1",

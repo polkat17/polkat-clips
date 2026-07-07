@@ -13,6 +13,12 @@ import {
   VIRAL_PROMO_DURATION_IN_FRAMES,
 } from "./compositions/ViralPromo";
 import viralPromoData from "./data/viralPromo.json";
+import {
+  ListStory,
+  ListStoryProps,
+  LIST_STORY_DURATION_IN_FRAMES,
+} from "./compositions/ListStory";
+import listStoryData from "./data/listStory.json";
 
 // scripts.json entries carry an extra `id` field that DemoClipProps doesn't
 // declare — Composition's generics need an explicit Props type here so
@@ -63,6 +69,19 @@ export const RemotionRoot: React.FC = () => {
         width={VIDEO_WIDTH}
         height={VIDEO_HEIGHT}
         defaultProps={viralPromoData}
+      />
+
+      {/* The reworked native-feeling format: one continuous background shot,
+          bold instant-pop captions, text-driven escalating list joke instead
+          of a multi-scene montage. See src/data/listStory.json for copy. */}
+      <Composition<AnyZodObject, ListStoryProps>
+        id="ListStory"
+        component={ListStory}
+        durationInFrames={LIST_STORY_DURATION_IN_FRAMES}
+        fps={FPS}
+        width={VIDEO_WIDTH}
+        height={VIDEO_HEIGHT}
+        defaultProps={listStoryData}
       />
     </>
   );

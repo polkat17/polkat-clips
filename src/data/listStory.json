@@ -1,0 +1,23 @@
+{
+  "background": {
+    "pexelsQuery": "man walking city street looking at phone",
+    "broll": "list-story-bg.mp4"
+  },
+  "hookLine": "Things I've said to avoid admitting I forgot someone's name:",
+  "listItems": [
+    "Good to see you, man!",
+    "Hey... you!",
+    "Yeah, work's been work, you know?",
+    "Anyway — text me sometime!",
+    "...I don't have your number."
+  ],
+  "twistLine": "I built an app so I'd stop doing this.",
+  "solution": {
+    "screenRecording": "reference/recalla-promo-vertical-final.mp4",
+    "bullets": [
+      "Save memories about people",
+      "Never blank on a name again"
+    ]
+  },
+  "endingLine": "Recalla. Because people remember when you remember."
+}

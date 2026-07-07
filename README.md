@@ -12,7 +12,33 @@ npm start   # opens the Remotion Studio to preview compositions
 
 ## Compositions
 
-### ViralPromo — the main one
+### ListStory — the current best format
+
+A 20s video built around the lesson from ViralPromo's real-world feedback:
+multi-scene stock montages read as "AI-generated commercial," not TikTok
+content. `ListStory.tsx` fixes that structurally, not just cosmetically:
+
+- **One continuous background shot** for the entire joke — no scene cuts
+  during the hook/list, so there's no "different actor every 2 seconds" tell.
+- **Bold instant-pop captions** (self-hosted Liberation Sans Bold, hard
+  stroke, ~3-frame pop-in) instead of slow cinematic serif fades.
+- **Text-driven escalating list joke** ("Things I've said to avoid admitting
+  I forgot someone's name: 1... 2... 3...") instead of disconnected vignettes
+  — the escalation lives in the captions, not in acted-out scenes, so it
+  doesn't need custom footage per beat.
+- A twist line ("I built an app so I'd stop doing this") replaces the old
+  "what if you never forgot..." ad-pivot phrasing.
+- Subtle grain + vignette + handheld jitter on the background shot, to read
+  less like a clean stock download.
+
+Only needs **one** Pexels clip (vs. ViralPromo's seven). Copy/query lives in
+`src/data/listStory.json`.
+
+Known limitation, not solved here: trending audio is a TikTok-native concept
+applied at upload time, not something to bake into the render — see the TODO
+in `ListStory.tsx`.
+
+### ViralPromo — fast-cut stock montage (superseded by ListStory)
 
 A single 35s fast-cut video: a relatable stock-footage montage of people
 forgetting small details about each other, then a short reveal of the real
@@ -45,8 +71,12 @@ variant in `public/screen-recordings/`.
   closing card, reused by both compositions.
 - `src/Root.tsx` — registers every composition.
 - `public/screen-recordings/` — per-variant app recordings for `DemoClip`.
-- `public/broll/` — stock clips for `ViralPromo`, fetched via the scripts
-  below. Gitignored (regenerate with `npm run fetch:broll`), not committed.
+- `public/broll/` — stock clips for `ViralPromo`/`ListStory`, fetched via the
+  scripts below. Gitignored (regenerate with `npm run fetch:broll` /
+  `npm run fetch:list-story-broll`), not committed.
+- `public/fonts/LiberationSans-Bold.ttf` — bundled caption font for
+  `ListStory` (SIL OFL licensed), loaded via `src/loadCaptionFont.ts` so
+  rendering is identical regardless of what fonts the host machine has.
 - `public/reference/` — the existing finished promo videos; `ViralPromo`'s
   Solution phase plays `reference/recalla-promo-vertical-final.mp4` directly.
 - `public/music/` — background tracks (not wired in yet, see TODO in each
@@ -56,6 +86,7 @@ variant in `public/screen-recordings/`.
 ## Rendering
 
 ```bash
+npx remotion render ListStory out/list-story.mp4
 npx remotion render ViralPromo out/viral-promo.mp4
 npx remotion render DemoClip-sarah-promotion out/sarah-promotion.mp4
 npx remotion render                # renders every registered composition
@@ -71,20 +102,24 @@ based on the `pexelsQuery`/`broll` pairs in `src/data/viralPromo.json`
 (skips clips that already exist; pass `-- --force` to redo all of them).
 Run this before rendering `ViralPromo` locally.
 
-**`npm run fetch:pexels -- "search term" 3`** — ad-hoc single query, for
-grabbing a one-off clip outside the manifest.
+**`npm run fetch:list-story-broll`** — downloads the single clip
+`ListStory.tsx` needs, based on `src/data/listStory.json`'s `background`
+field.
 
-Both read `PEXELS_API_KEY` from the environment. Locally:
+**`npm run fetch:pexels -- "search term" 3`** — ad-hoc single query, for
+grabbing a one-off clip outside either manifest.
+
+All read `PEXELS_API_KEY` from the environment. Locally:
 ```bash
 cp .env.example .env      # then paste your key into .env — it's gitignored
-npm run fetch:broll
+npm run fetch:list-story-broll
 ```
 
-**In CI:** `.github/workflows/render-viral-promo.yml` runs both steps
-(fetch broll, then `remotion render`) on manual trigger from the Actions tab,
-using a `PEXELS_API_KEY` repository secret, and uploads the rendered mp4 as
-a build artifact. To add the secret (GitHub only allows this over the
-authenticated web UI, not the API):
+**In CI:** `.github/workflows/render-list-story.yml` and
+`render-viral-promo.yml` each fetch their broll, render, and upload the mp4
+as a build artifact, on manual trigger from the Actions tab, using a
+`PEXELS_API_KEY` repository secret. To add the secret (GitHub only allows
+this over the authenticated web UI, not the API):
 1. `github.com/polkat17/polkat-clips` → **Settings** → **Secrets and
    variables** → **Actions** → **New repository secret**.
 2. Name: `PEXELS_API_KEY`, value: your key. Save.
