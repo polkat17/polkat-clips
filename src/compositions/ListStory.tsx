@@ -8,7 +8,7 @@ import {
   interpolate,
 } from "remotion";
 import { FPS } from "../theme";
-import { CAPTION_FONT_FAMILY } from "../loadCaptionFont";
+import { CAPTION_FONT_FAMILY, CaptionFontStyle } from "../loadCaptionFont";
 import listStoryData from "../data/listStory.json";
 
 // A different formula from ViralPromo/DemoClip: one continuous background
@@ -66,6 +66,8 @@ export const ListStory: React.FC<ListStoryProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
+      <CaptionFontStyle />
+
       {/* TODO: add a trending sound in TikTok/Reels itself at upload time —
           baking a specific sound into the render defeats the point of
           "trending audio," which only counts when picked in-app. */}

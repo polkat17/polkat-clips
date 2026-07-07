@@ -12,10 +12,10 @@
     "fetch:list-story-broll": "node --env-file=.env scripts/fetch-list-story-broll.mjs"
   },
   "dependencies": {
+    "@remotion/cli": "4.0.485",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "remotion": "4.0.485",
-    "@remotion/cli": "4.0.485"
+    "remotion": "4.0.485"
   },
   "devDependencies": {
     "@types/react": "18.3.1",
