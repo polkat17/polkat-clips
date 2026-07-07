@@ -3,6 +3,7 @@ import {
   AbsoluteFill,
   Sequence,
   OffthreadVideo,
+  Img,
   staticFile,
   useCurrentFrame,
   interpolate,
@@ -24,8 +25,8 @@ import baxterClipData from "../data/baxterClip.json";
 // that stays fully visible. This clip previews the format only and isn't
 // postable until there's a clean (paid-tier) export.
 
-const FREEZE_HOLD = 20; // extra frames holding the last frame after the line
-const TAG_DURATION = 2.5; // seconds the tag line holds on screen
+const FREEZE_HOLD = 40; // extra frames holding the last frame after the line
+const TAG_DURATION = 3; // seconds the tag line holds on screen
 
 const trimFrames = baxterClipData.trimEndFrame - baxterClipData.trimStartFrame;
 const clipSequenceFrames = trimFrames + FREEZE_HOLD;
@@ -109,10 +110,13 @@ const ClipPhase: React.FC<{
 const TagPhase: React.FC<{ text: string }> = ({ text }) => {
   const frame = useCurrentFrame();
 
-  const scale = interpolate(frame, [0, 5], [1.2, 1], {
+  const logoScale = interpolate(frame, [0, 8], [1.2, 1], {
     extrapolateRight: "clamp",
   });
-  const opacity = interpolate(frame, [0, 3], [0, 1], {
+  const logoOpacity = interpolate(frame, [0, 5], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+  const textOpacity = interpolate(frame, [10, 20], [0, 1], {
     extrapolateRight: "clamp",
   });
 
@@ -125,10 +129,19 @@ const TagPhase: React.FC<{ text: string }> = ({ text }) => {
         padding: 80,
       }}
     >
+      <Img
+        src={staticFile("logo.png")}
+        style={{
+          width: 140,
+          height: 140,
+          opacity: logoOpacity,
+          transform: `scale(${logoScale})`,
+          marginBottom: 32,
+        }}
+      />
       <div
         style={{
-          opacity,
-          transform: `scale(${scale})`,
+          opacity: textOpacity,
           fontFamily: CAPTION_FONT_FAMILY,
           fontWeight: 700,
           fontSize: 56,
