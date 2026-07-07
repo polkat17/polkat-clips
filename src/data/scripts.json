@@ -1,0 +1,20 @@
+[
+  {
+    "id": "sarah-promotion",
+    "hookText": "You forgot her name again.",
+    "problemText": "You met her three weeks ago. She just told you her big news. Blank.",
+    "ctaText": "Never forget human details.",
+    "screenRecordingFile": "sarah-demo.mp4",
+    "personName": "Sarah",
+    "personDetail": "just got promoted"
+  },
+  {
+    "id": "mike-dog",
+    "hookText": "\"How's... your thing going?\"",
+    "problemText": "You know he told you something important. You just can't remember what.",
+    "ctaText": "Never forget human details.",
+    "screenRecordingFile": "mike-demo.mp4",
+    "personName": "Mike",
+    "personDetail": "adopted a rescue dog named Biscuit"
+  }
+]
