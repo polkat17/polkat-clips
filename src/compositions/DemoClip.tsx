@@ -2,31 +2,14 @@ import React from "react";
 import {
   AbsoluteFill,
   Sequence,
-  Video,
-  Img,
+  OffthreadVideo,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
   interpolate,
 } from "remotion";
-
-// ─────────────────────────────────────────────────────────────────────────
-// THEME — tweak fonts/colors here and every video variant updates at once.
-// Matches the Recalla brand: warm off-white ink on a near-black background,
-// with a gold accent and an italic serif for emotional beats.
-// ─────────────────────────────────────────────────────────────────────────
-export const theme = {
-  fontFamily: "Georgia, 'Iowan Old Style', serif",
-  textColor: "#FAF8F4",
-  darkBackground: "#15140F",
-  brandBackground: "#15140F",
-  accentGold: "#C8A97E",
-  captionBackground: "rgba(0,0,0,0.55)",
-  hookFontSize: 88,
-  problemFontSize: 56,
-  captionFontSize: 34,
-  ctaTaglineFontSize: 44,
-};
+import { theme, FPS } from "../theme";
+import { EndCard } from "./shared/EndCard";
 
 // Phase durations in seconds. The whole clip is Hook + Problem + Reveal + CTA.
 const HOOK_DURATION = 2; // 0s -> 2s
@@ -34,11 +17,8 @@ const PROBLEM_DURATION = 4; // 2s -> 6s
 const REVEAL_DURATION = 12; // 6s -> 18s
 const CTA_DURATION = 7; // 18s -> 25s
 
-export const FPS = 30;
 export const DEMO_CLIP_DURATION_IN_FRAMES =
   (HOOK_DURATION + PROBLEM_DURATION + REVEAL_DURATION + CTA_DURATION) * FPS;
-export const DEMO_CLIP_WIDTH = 1080;
-export const DEMO_CLIP_HEIGHT = 1920;
 
 // A type alias (not an interface) so it structurally satisfies the
 // `Record<string, unknown>` constraint Remotion's <Composition> generics need.
@@ -97,7 +77,7 @@ export const DemoClip: React.FC<DemoClipProps> = ({
         from={hookFrames + problemFrames + revealFrames}
         durationInFrames={ctaFrames}
       >
-        <CtaPhase ctaText={ctaText} />
+        <EndCard tagline={ctaText} durationInFrames={ctaFrames} />
       </Sequence>
     </AbsoluteFill>
   );
@@ -206,8 +186,12 @@ const RevealPhase: React.FC<{
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <Video
+      <OffthreadVideo
         src={staticFile(`screen-recordings/${screenRecordingFile}`)}
+        // Don't hard-crash the render if the recording hasn't been added yet.
+        onError={(err) =>
+          console.warn(`screen-recordings/${screenRecordingFile} failed to play:`, err)
+        }
         style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
 
@@ -237,75 +221,6 @@ const RevealPhase: React.FC<{
           </div>
         </div>
       </AbsoluteFill>
-    </AbsoluteFill>
-  );
-};
-
-// ─── Phase 4: CTA (18-25s) ──────────────────────────────────────────────
-// Logo scales/fades in on the brand background, tagline follows shortly
-// after, then everything fades to a solid brand-color card to end the clip
-// cleanly (good for a loop or for stitching clips together later).
-const CtaPhase: React.FC<{ ctaText: string }> = ({ ctaText }) => {
-  const frame = useCurrentFrame();
-  const ctaFrames = CTA_DURATION * FPS;
-
-  const logoOpacity = interpolate(frame, [0, 15], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-  const logoScale = interpolate(frame, [0, 15], [0.8, 1], {
-    extrapolateRight: "clamp",
-  });
-
-  const taglineOpacity = interpolate(frame, [15, 30], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-
-  // Fade to a fully solid brand-color card over the last 20 frames.
-  const endFadeOpacity = interpolate(
-    frame,
-    [ctaFrames - 20, ctaFrames],
-    [0, 1],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
-
-  return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: theme.brandBackground,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Img
-        src={staticFile("logo.png")}
-        style={{
-          width: 220,
-          height: 220,
-          opacity: logoOpacity,
-          transform: `scale(${logoScale})`,
-        }}
-      />
-      <div
-        style={{
-          marginTop: 32,
-          opacity: taglineOpacity,
-          fontFamily: theme.fontFamily,
-          fontStyle: "italic",
-          fontSize: theme.ctaTaglineFontSize,
-          color: theme.accentGold,
-          textAlign: "center",
-          padding: "0 60px",
-        }}
-      >
-        {ctaText}
-      </div>
-
-      <AbsoluteFill
-        style={{
-          backgroundColor: theme.brandBackground,
-          opacity: endFadeOpacity,
-        }}
-      />
     </AbsoluteFill>
   );
 };

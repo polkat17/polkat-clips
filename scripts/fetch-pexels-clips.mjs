@@ -6,55 +6,16 @@
 //   PEXELS_API_KEY=xxx node scripts/fetch-pexels-clips.mjs "two friends laughing" 3
 //
 // Requires Node 20.6+ for --env-file (Node 22 here) and the global fetch API.
+//
+// For downloading everything ViralPromo.tsx needs in one go, see
+// fetch-broll-manifest.mjs instead.
 
 import fs from "node:fs";
 import path from "node:path";
+import { slugify, searchVideos, pickBestFile, downloadFile } from "./pexels-client.mjs";
 
 const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
 const OUTPUT_DIR = path.resolve("public/broll");
-
-function slugify(text) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-}
-
-async function searchVideos(query, perPage) {
-  const url = `https://api.pexels.com/videos/search?query=${encodeURIComponent(
-    query
-  )}&orientation=portrait&per_page=${perPage}`;
-
-  const res = await fetch(url, { headers: { Authorization: PEXELS_API_KEY } });
-  if (!res.ok) {
-    throw new Error(`Pexels API error ${res.status}: ${await res.text()}`);
-  }
-  return res.json();
-}
-
-// Pexels returns the same clip encoded at several resolutions. Prefer a
-// portrait (9:16-ish) file no wider than 1080px, since that's what DemoClip
-// renders at — no point downloading 4K b-roll for a 1080-wide composition.
-function pickBestFile(video) {
-  const portraitMp4s = video.video_files
-    .filter((f) => f.file_type === "video/mp4" && f.height >= f.width)
-    .sort((a, b) => b.width - a.width);
-
-  return (
-    portraitMp4s.find((f) => f.width <= 1080) ??
-    portraitMp4s[portraitMp4s.length - 1]
-  );
-}
-
-async function downloadFile(url, destPath) {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Failed to download ${url}: ${res.status}`);
-  }
-  const buffer = Buffer.from(await res.arrayBuffer());
-  fs.writeFileSync(destPath, buffer);
-}
 
 async function main() {
   if (!PEXELS_API_KEY) {
@@ -77,7 +38,7 @@ async function main() {
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-  const { videos } = await searchVideos(query, count);
+  const { videos } = await searchVideos(PEXELS_API_KEY, query, count);
   if (!videos?.length) {
     console.error(`No Pexels results for "${query}"`);
     process.exit(1);

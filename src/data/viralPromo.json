@@ -1,0 +1,49 @@
+{
+  "hook": {
+    "pexelsQuery": "two friends awkward conversation",
+    "broll": "hook.mp4",
+    "captionText": "You're one sentence away from blanking."
+  },
+  "escalationBeats": [
+    {
+      "pexelsQuery": "woman holding cat smiling",
+      "broll": "beat-1-dog-cat.mp4",
+      "captionText": "\"How's your dog doing?\"\nThey have a cat."
+    },
+    {
+      "pexelsQuery": "two people shaking hands introduction",
+      "broll": "beat-2-forgot-name.mp4",
+      "captionText": "Forgets their name before the handshake ends."
+    },
+    {
+      "pexelsQuery": "man looking awkward embarrassed",
+      "broll": "beat-3-ex-partner.mp4",
+      "captionText": "\"How's your girlfriend?\"\nThey broke up in March."
+    },
+    {
+      "pexelsQuery": "father playing with daughter park",
+      "broll": "beat-4-child-name.mp4",
+      "captionText": "Can't remember his kid's name.\nAgain."
+    },
+    {
+      "pexelsQuery": "friends talking coffee shop",
+      "broll": "beat-5-job.mp4",
+      "captionText": "Still has no idea what she does for work."
+    },
+    {
+      "pexelsQuery": "friends laughing outdoors picnic",
+      "broll": "beat-6-birthday.mp4",
+      "captionText": "Wished her happy birthday.\nThree months early."
+    }
+  ],
+  "revealText": "What if you never forgot the little things about people again?",
+  "solution": {
+    "screenRecording": "reference/recalla-promo-vertical-final.mp4",
+    "bullets": [
+      "Save memories & notes about people",
+      "Remember names, pets, family, interests, birthdays",
+      "Stay genuinely thoughtful — without relying on memory alone"
+    ]
+  },
+  "endingTagline": "Because people remember when you remember."
+}

@@ -1,0 +1,40 @@
+name: Render ViralPromo
+
+# Manual trigger only — this hits the Pexels API and does a full Remotion
+# render, so it shouldn't run on every push. Run it from the Actions tab
+# once you're happy with src/data/viralPromo.json.
+on:
+  workflow_dispatch:
+    inputs:
+      force_refetch:
+        description: "Re-download broll clips even if already cached in a previous run's output"
+        type: boolean
+        default: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch broll from Pexels
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: node scripts/fetch-broll-manifest.mjs ${{ inputs.force_refetch && '--force' || '' }}
+
+      - name: Render ViralPromo
+        run: npx remotion render ViralPromo out/viral-promo.mp4
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: viral-promo
+          path: out/viral-promo.mp4
+          retention-days: 14

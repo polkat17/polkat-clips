@@ -1,14 +1,18 @@
 import React from "react";
 import { Composition, type AnyZodObject } from "remotion";
+import { FPS, VIDEO_WIDTH, VIDEO_HEIGHT } from "./theme";
 import {
   DemoClip,
   DemoClipProps,
   DEMO_CLIP_DURATION_IN_FRAMES,
-  DEMO_CLIP_WIDTH,
-  DEMO_CLIP_HEIGHT,
-  FPS,
 } from "./compositions/DemoClip";
 import scripts from "./data/scripts.json";
+import {
+  ViralPromo,
+  ViralPromoProps,
+  VIRAL_PROMO_DURATION_IN_FRAMES,
+} from "./compositions/ViralPromo";
+import viralPromoData from "./data/viralPromo.json";
 
 // scripts.json entries carry an extra `id` field that DemoClipProps doesn't
 // declare — Composition's generics need an explicit Props type here so
@@ -27,8 +31,8 @@ export const RemotionRoot: React.FC = () => {
         component={DemoClip}
         durationInFrames={DEMO_CLIP_DURATION_IN_FRAMES}
         fps={FPS}
-        width={DEMO_CLIP_WIDTH}
-        height={DEMO_CLIP_HEIGHT}
+        width={VIDEO_WIDTH}
+        height={VIDEO_HEIGHT}
         defaultProps={typedScripts[0]}
       />
 
@@ -42,11 +46,24 @@ export const RemotionRoot: React.FC = () => {
           component={DemoClip}
           durationInFrames={DEMO_CLIP_DURATION_IN_FRAMES}
           fps={FPS}
-          width={DEMO_CLIP_WIDTH}
-          height={DEMO_CLIP_HEIGHT}
+          width={VIDEO_WIDTH}
+          height={VIDEO_HEIGHT}
           defaultProps={script}
         />
       ))}
+
+      {/* The fast-cut stock-footage viral promo: Hook -> Escalation ->
+          Reveal -> Solution -> Ending. It's a single fixed video, not swapped
+          per-person, so there's just one composition here. */}
+      <Composition<AnyZodObject, ViralPromoProps>
+        id="ViralPromo"
+        component={ViralPromo}
+        durationInFrames={VIRAL_PROMO_DURATION_IN_FRAMES}
+        fps={FPS}
+        width={VIDEO_WIDTH}
+        height={VIDEO_HEIGHT}
+        defaultProps={viralPromoData}
+      />
     </>
   );
 };
