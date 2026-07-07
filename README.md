@@ -32,3 +32,38 @@ npm start   # opens the Remotion Studio to preview compositions
 npx remotion render DemoClip-sarah-promotion out/sarah-promotion.mp4
 npx remotion render                # renders every registered composition
 ```
+
+## Pexels stock footage (`public/broll/`)
+
+`scripts/fetch-pexels-clips.mjs` downloads free stock video clips from Pexels
+into `public/broll/` so renders read local files instead of hitting the
+network mid-render. It isn't wired into `DemoClip.tsx` yet — that's a
+follow-up once we decide where footage fits creatively.
+
+**Get a key:** sign up free at https://www.pexels.com/api/ (instant, no
+billing, 200 req/hour / 20k/month).
+
+**Run it locally:**
+```bash
+cp .env.example .env      # then paste your key into .env — it's gitignored
+npm run fetch:pexels -- "two friends laughing" 3
+```
+
+**Run it in CI (GitHub Actions):** the script just reads `PEXELS_API_KEY`
+from the environment, so any workflow can call it directly:
+```bash
+node scripts/fetch-pexels-clips.mjs "two friends laughing" 3
+```
+To make the key available there, add it as a repository secret (I don't have
+a tool that can do this for you — GitHub doesn't expose secret creation over
+the API for security reasons, only over the authenticated web UI):
+1. Go to `github.com/polkat17/polkat-clips` → **Settings** → **Secrets and
+   variables** → **Actions**.
+2. Click **New repository secret**.
+3. Name: `PEXELS_API_KEY`, value: your key. Save.
+4. Reference it in a workflow step as `${{ secrets.PEXELS_API_KEY }}`, e.g.
+   `env: { PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }} }`.
+
+No workflow file exists yet — ask and I'll add one once we know the trigger
+(manual dispatch, pre-render step, etc.) and whether downloaded clips should
+be committed back or just used transiently during a render job.

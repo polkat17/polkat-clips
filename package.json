@@ -6,7 +6,8 @@
   "scripts": {
     "start": "remotion studio",
     "build": "remotion render",
-    "upgrade": "remotion upgrade"
+    "upgrade": "remotion upgrade",
+    "fetch:pexels": "node --env-file=.env scripts/fetch-pexels-clips.mjs"
   },
   "dependencies": {
     "react": "18.3.1",

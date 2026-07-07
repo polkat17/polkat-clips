@@ -2,3 +2,7 @@ node_modules
 out
 .DS_Store
 *.log
+.env
+
+# Regeneratable via `npm run fetch:pexels` — no need to commit stock footage.
+public/broll/*.mp4
