@@ -19,6 +19,12 @@ import {
   LIST_STORY_DURATION_IN_FRAMES,
 } from "./compositions/ListStory";
 import listStoryData from "./data/listStory.json";
+import {
+  BaxterClip,
+  BaxterClipProps,
+  BAXTER_CLIP_DURATION_IN_FRAMES,
+} from "./compositions/BaxterClip";
+import baxterClipData from "./data/baxterClip.json";
 
 // scripts.json entries carry an extra `id` field that DemoClipProps doesn't
 // declare — Composition's generics need an explicit Props type here so
@@ -82,6 +88,19 @@ export const RemotionRoot: React.FC = () => {
         width={VIDEO_WIDTH}
         height={VIDEO_HEIGHT}
         defaultProps={listStoryData}
+      />
+
+      {/* Single AI-generated-performer clip (HeyGen) instead of stock
+          footage: one joke, hard cut to tag line. See file header in
+          BaxterClip.tsx re: the watermark. */}
+      <Composition<AnyZodObject, BaxterClipProps>
+        id="BaxterClip"
+        component={BaxterClip}
+        durationInFrames={BAXTER_CLIP_DURATION_IN_FRAMES}
+        fps={FPS}
+        width={854}
+        height={1490}
+        defaultProps={baxterClipData}
       />
     </>
   );
