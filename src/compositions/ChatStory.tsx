@@ -36,6 +36,8 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //      detail ("you helped me move out"), not a vague one ("you were
 //      there"). Give this one a typing-indicator beat too: the pause is
 //      itself "acting" and builds tension before the worse detail lands.
+//      Give it the most room of any beat — it's the joke people actually
+//      laugh at, everything else is setup or landing.
 //   6. A dry, understated punchline — owning it beats over-explaining it.
 //   7. Recalla reveal, ~1.5-2s. Wordmark + one line. Don't let it become an
 //      ad. `skipReveal: true` drops this phase entirely — for a first batch
@@ -46,18 +48,31 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 // real posted-video feedback that TikTok/Reels/Shorts chrome (profile bar,
 // caption/sound/engagement rail, like/comment/share column) genuinely
 // covers anything outside it, not just a theoretical template margin.
+//
+// Timing realism: don't give every message the same `delay`/typing time —
+// a uniform rhythm is the thing that reads as generated rather than typed
+// by a person. Vary typingSeconds per message (0.6-1.0s), give the
+// best-joke line noticeably more room than setup lines, and give a message
+// a tiny `delay` (~0.2s) with no `typing` to mimic a real double-send — two
+// bubbles from the same sender landing almost on top of each other.
+// `timeGap` on a message renders a small "2m"-style divider before it, for
+// a beat that should read as more real-world time passing than the video
+// itself spends on it.
 
-const TYPING_DURATION_SECONDS = 0.9;
+const TYPING_DURATION_SECONDS = 0.9; // fallback when a message doesn't set typingSeconds
 const HOLD_AFTER_LAST_MESSAGE = 1.5; // seconds to let the punchline sit
 const TAG_DURATION = 1.75; // seconds — "don't let it become an advert"
 const HEADER_HEIGHT = 130;
 const HOOK_VISIBLE_SECONDS = 2.3; // gone before the "oh no" line lands
+const DELIVERED_DELAY_SECONDS = 0.5; // "Delivered" appears a beat after the last bubble, not instantly
 
 export type ChatMessage = {
   sender: "me" | "them";
   text: string;
   delay: number; // seconds after the previous message before this one appears
   typing?: boolean; // show a typing-indicator bubble just before this message
+  typingSeconds?: number; // overrides TYPING_DURATION_SECONDS for this message's typing beat
+  timeGap?: string; // e.g. "2m" — renders a small time divider before this message
 };
 
 // A type alias (not an interface) so it structurally satisfies the
@@ -80,8 +95,9 @@ function scheduleMessages(messages: ChatMessage[]): ScheduledMessage[] {
   return messages.map((message) => {
     cursorSeconds += message.delay;
     const appearAtFrame = Math.round(cursorSeconds * FPS);
+    const typingSeconds = message.typingSeconds ?? TYPING_DURATION_SECONDS;
     const typingStartFrame = message.typing
-      ? Math.round((cursorSeconds - TYPING_DURATION_SECONDS) * FPS)
+      ? Math.round((cursorSeconds - typingSeconds) * FPS)
       : null;
     return { ...message, appearAtFrame, typingStartFrame };
   });
@@ -145,6 +161,11 @@ const ConversationPhase: React.FC<{
     frame >= nextHidden.typingStartFrame &&
     frame < nextHidden.appearAtFrame;
 
+  const lastMessage = schedule[schedule.length - 1];
+  const showDelivered =
+    lastMessage.sender === "me" &&
+    frame >= lastMessage.appearAtFrame + Math.round(DELIVERED_DELAY_SECONDS * FPS);
+
   return (
     <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
       <ChatHeader contactName={contactName} />
@@ -162,13 +183,16 @@ const ConversationPhase: React.FC<{
         }}
       >
         {visible.map((message, i) => (
-          <MessageBubble
-            key={i}
-            sender={message.sender}
-            text={message.text}
-            frame={frame}
-            appearAtFrame={message.appearAtFrame}
-          />
+          <React.Fragment key={i}>
+            {message.timeGap && <TimeDivider label={message.timeGap} />}
+            <MessageBubble
+              sender={message.sender}
+              text={message.text}
+              frame={frame}
+              appearAtFrame={message.appearAtFrame}
+              showDelivered={message === lastMessage && showDelivered}
+            />
+          </React.Fragment>
         ))}
         {showTyping && nextHidden && <TypingBubble sender={nextHidden.sender} />}
       </AbsoluteFill>
@@ -177,6 +201,24 @@ const ConversationPhase: React.FC<{
     </AbsoluteFill>
   );
 };
+
+// A muted centered label between bubbles — the same device iMessage uses to
+// mark a real gap in time. Signals more time passed than the video spends
+// showing, without needing an actual pause.
+const TimeDivider: React.FC<{ label: string }> = ({ label }) => (
+  <div
+    style={{
+      alignSelf: "center",
+      fontFamily: MESSAGE_FONT_FAMILY,
+      fontWeight: 400,
+      fontSize: 18,
+      color: "#B0B0B5",
+      margin: "4px 0",
+    }}
+  >
+    {label}
+  </div>
+);
 
 // Sits in the blank space above the conversation (bubbles anchor to the
 // bottom and grow upward, so this area is empty for the first couple of
@@ -275,7 +317,8 @@ const MessageBubble: React.FC<{
   text: string;
   frame: number;
   appearAtFrame: number;
-}> = ({ sender, text, frame, appearAtFrame }) => {
+  showDelivered?: boolean;
+}> = ({ sender, text, frame, appearAtFrame, showDelivered }) => {
   const localFrame = frame - appearAtFrame;
   const scale = interpolate(localFrame, [0, 5], [0.85, 1], {
     extrapolateRight: "clamp",
@@ -286,24 +329,39 @@ const MessageBubble: React.FC<{
   const isMe = sender === "me";
 
   return (
-    <div
-      style={{
-        alignSelf: isMe ? "flex-end" : "flex-start",
-        maxWidth: "78%",
-        opacity,
-        transform: `scale(${scale})`,
-        transformOrigin: isMe ? "bottom right" : "bottom left",
-        backgroundColor: isMe ? "#0A84FF" : "#E9E9EB",
-        color: isMe ? "#FFFFFF" : "#000000",
-        borderRadius: 30,
-        padding: "16px 24px",
-        fontFamily: MESSAGE_FONT_FAMILY,
-        fontWeight: 400,
-        fontSize: 32,
-        lineHeight: 1.3,
-      }}
-    >
-      {text}
+    <div style={{ display: "flex", flexDirection: "column", alignItems: isMe ? "flex-end" : "flex-start" }}>
+      <div
+        style={{
+          maxWidth: "78%",
+          opacity,
+          transform: `scale(${scale})`,
+          transformOrigin: isMe ? "bottom right" : "bottom left",
+          backgroundColor: isMe ? "#0A84FF" : "#E9E9EB",
+          color: isMe ? "#FFFFFF" : "#000000",
+          borderRadius: 30,
+          padding: "16px 24px",
+          fontFamily: MESSAGE_FONT_FAMILY,
+          fontWeight: 400,
+          fontSize: 32,
+          lineHeight: 1.3,
+        }}
+      >
+        {text}
+      </div>
+      {showDelivered && (
+        <div
+          style={{
+            fontFamily: MESSAGE_FONT_FAMILY,
+            fontWeight: 400,
+            fontSize: 16,
+            color: "#B0B0B5",
+            marginTop: 4,
+            marginRight: 6,
+          }}
+        >
+          Delivered
+        </div>
+      )}
     </div>
   );
 };
