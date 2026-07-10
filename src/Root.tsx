@@ -35,6 +35,12 @@ import forgotName from "./data/chatStories/forgotName.json";
 import exPartner from "./data/chatStories/exPartner.json";
 import kidsName from "./data/chatStories/kidsName.json";
 import jobHobby from "./data/chatStories/jobHobby.json";
+import {
+  ChannelBanner,
+  ChannelBannerProps,
+  BANNER_WIDTH,
+  BANNER_HEIGHT,
+} from "./compositions/ChannelBanner";
 
 // JSON imports infer `sender` as a generic `string`, not the literal union
 // ChatMessage needs — cast at the boundary since the data files are the
@@ -140,6 +146,18 @@ export const RemotionRoot: React.FC = () => {
           defaultProps={data}
         />
       ))}
+
+      {/* YouTube channel art — 2560x1440, single still frame. See file
+          header in ChannelBanner.tsx for the safe-area numbers. */}
+      <Composition<AnyZodObject, ChannelBannerProps>
+        id="ChannelBanner"
+        component={ChannelBanner}
+        durationInFrames={1}
+        fps={FPS}
+        width={BANNER_WIDTH}
+        height={BANNER_HEIGHT}
+        defaultProps={{ tagline: "Never forget human details." }}
+      />
     </>
   );
 };
