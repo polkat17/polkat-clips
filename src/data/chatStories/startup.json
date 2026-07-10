@@ -8,7 +8,7 @@
     { "sender": "them", "text": "i don't have a startup", "delay": 2.0 },
     { "sender": "them", "text": "I got laid off.", "delay": 1.8 },
     { "sender": "them", "text": "eight months ago.", "delay": 0.4 },
-    { "sender": "me", "text": "right, I knew that", "delay": 1.8, "typing": true, "typingSeconds": 0.6, "skip": "10 minutes later" },
+    { "sender": "me", "text": "right, I knew that", "delay": 2.7, "typing": true, "typingSeconds": 0.6, "skip": "10 minutes later", "skipDelay": 0.8 },
     { "sender": "them", "text": "you told my mom", "delay": 1.4, "typing": true, "typingSeconds": 1.0 },
     { "sender": "them", "text": "I was \"basically Mark Zuckerberg\"", "delay": 0.2 },
     { "sender": "me", "text": "💀", "delay": 0.3 },
