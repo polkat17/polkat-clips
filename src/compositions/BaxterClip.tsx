@@ -1,21 +1,13 @@
 import React from "react";
-import {
-  AbsoluteFill,
-  Sequence,
-  OffthreadVideo,
-  Img,
-  staticFile,
-  useCurrentFrame,
-  interpolate,
-} from "remotion";
+import { AbsoluteFill, Sequence, OffthreadVideo, staticFile } from "remotion";
 import { FPS } from "../theme";
-import { CAPTION_FONT_FAMILY, CaptionFontStyle } from "../loadCaptionFont";
+import { CaptionFontStyle } from "../loadCaptionFont";
+import { NativeTagCard } from "./shared/NativeTagCard";
 import baxterClipData from "../data/baxterClip.json";
 
 // A single AI-generated (HeyGen) "creator" clip instead of stock footage or
 // an acted-out multi-scene montage: one performer, one location, one joke,
-// then a hard cut to the tag line. Native-format captions (see ListStory)
-// carry the punchline, not an ornate branded end card.
+// then a hard cut to the tag line.
 //
 // NOTE: the source clip is a HeyGen free-tier screen recording. The crop
 // below removes the *browser/player chrome* (scrubber, controls, dead
@@ -65,7 +57,7 @@ export const BaxterClip: React.FC<BaxterClipProps> = ({
       </Sequence>
 
       <Sequence from={clipFrames} durationInFrames={tagFrames}>
-        <TagPhase text={tagLine} />
+        <NativeTagCard text={tagLine} />
       </Sequence>
     </AbsoluteFill>
   );
@@ -106,53 +98,3 @@ const ClipPhase: React.FC<{
     </AbsoluteFill>
   </AbsoluteFill>
 );
-
-const TagPhase: React.FC<{ text: string }> = ({ text }) => {
-  const frame = useCurrentFrame();
-
-  const logoScale = interpolate(frame, [0, 8], [1.2, 1], {
-    extrapolateRight: "clamp",
-  });
-  const logoOpacity = interpolate(frame, [0, 5], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-  const textOpacity = interpolate(frame, [10, 20], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-
-  return (
-    <AbsoluteFill
-      style={{
-        backgroundColor: "#000",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 80,
-      }}
-    >
-      <Img
-        src={staticFile("logo.png")}
-        style={{
-          width: 140,
-          height: 140,
-          opacity: logoOpacity,
-          transform: `scale(${logoScale})`,
-          marginBottom: 32,
-        }}
-      />
-      <div
-        style={{
-          opacity: textOpacity,
-          fontFamily: CAPTION_FONT_FAMILY,
-          fontWeight: 700,
-          fontSize: 56,
-          color: "#FFFFFF",
-          textAlign: "center",
-          lineHeight: 1.2,
-          WebkitTextStroke: "2px black",
-        }}
-      >
-        {text}
-      </div>
-    </AbsoluteFill>
-  );
-};

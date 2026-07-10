@@ -1,0 +1,17 @@
+{
+  "contactName": "Sam",
+  "messages": [
+    { "sender": "them", "text": "work's been insane lately", "delay": 0.4 },
+    { "sender": "me", "text": "oh no what happened", "delay": 0.7 },
+    { "sender": "them", "text": "the merger. remember?", "delay": 1.2 },
+    { "sender": "me", "text": "oh right, how's the restaurant holding up through all that", "delay": 1.7, "typing": true },
+    { "sender": "them", "text": "I'm a lawyer", "delay": 1.4 },
+    { "sender": "me", "text": "I know that", "delay": 1.5, "typing": true },
+    { "sender": "me", "text": "I meant the OTHER thing you mentioned", "delay": 1.1 },
+    { "sender": "them", "text": "I've never mentioned a restaurant", "delay": 1.5 },
+    { "sender": "me", "text": "🙃", "delay": 1.1 },
+    { "sender": "them", "text": "we've been friends for six years", "delay": 1.4 },
+    { "sender": "me", "text": "and every one of them a gift", "delay": 1.6, "typing": true }
+  ],
+  "revealLine": "Built Recalla because I kept doing this."
+}

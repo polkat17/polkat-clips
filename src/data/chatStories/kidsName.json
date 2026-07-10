@@ -1,0 +1,16 @@
+{
+  "contactName": "Priya",
+  "messages": [
+    { "sender": "them", "text": "the kids say hi btw", "delay": 0.4 },
+    { "sender": "me", "text": "aw tell them I say hi!!", "delay": 0.7 },
+    { "sender": "them", "text": "Mia's starting kindergarten next week", "delay": 1.2 },
+    { "sender": "me", "text": "wait is Mia the older one or—", "delay": 1.6, "typing": true },
+    { "sender": "them", "text": "you're her godfather", "delay": 1.4 },
+    { "sender": "me", "text": "right, yes, obviously", "delay": 1.6, "typing": true },
+    { "sender": "me", "text": "I just meant in general. as a concept", "delay": 1.1 },
+    { "sender": "them", "text": "her middle name is after you", "delay": 1.5 },
+    { "sender": "me", "text": "🙃🙃", "delay": 1.2 },
+    { "sender": "me", "text": "tell her I love her!!", "delay": 1.5, "typing": true }
+  ],
+  "revealLine": "Built Recalla because I kept doing this."
+}

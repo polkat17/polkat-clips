@@ -25,6 +25,27 @@ import {
   BAXTER_CLIP_DURATION_IN_FRAMES,
 } from "./compositions/BaxterClip";
 import baxterClipData from "./data/baxterClip.json";
+import {
+  ChatStory,
+  ChatStoryProps,
+  getChatStoryDurationInFrames,
+} from "./compositions/ChatStory";
+import wifeDogCat from "./data/chatStories/wifeDogCat.json";
+import forgotName from "./data/chatStories/forgotName.json";
+import exPartner from "./data/chatStories/exPartner.json";
+import kidsName from "./data/chatStories/kidsName.json";
+import jobHobby from "./data/chatStories/jobHobby.json";
+
+// JSON imports infer `sender` as a generic `string`, not the literal union
+// ChatMessage needs — cast at the boundary since the data files are the
+// source of truth and always use "me"/"them".
+const chatStories: { id: string; data: ChatStoryProps }[] = [
+  { id: "wife-dog-cat", data: wifeDogCat as ChatStoryProps },
+  { id: "forgot-name", data: forgotName as ChatStoryProps },
+  { id: "ex-partner", data: exPartner as ChatStoryProps },
+  { id: "kids-name", data: kidsName as ChatStoryProps },
+  { id: "job-hobby", data: jobHobby as ChatStoryProps },
+];
 
 // scripts.json entries carry an extra `id` field that DemoClipProps doesn't
 // declare — Composition's generics need an explicit Props type here so
@@ -102,6 +123,23 @@ export const RemotionRoot: React.FC = () => {
         height={1490}
         defaultProps={baxterClipData}
       />
+
+      {/* Text-message-only concepts: no footage at all, just a chat UI with
+          an escalating misunderstanding, then the reveal. See
+          src/data/chatStories/*.json for the scripts — one composition per
+          concept so each can be rendered/reviewed individually. */}
+      {chatStories.map(({ id, data }) => (
+        <Composition<AnyZodObject, ChatStoryProps>
+          key={id}
+          id={`ChatStory-${id}`}
+          component={ChatStory}
+          durationInFrames={getChatStoryDurationInFrames(data.messages)}
+          fps={FPS}
+          width={VIDEO_WIDTH}
+          height={VIDEO_HEIGHT}
+          defaultProps={data}
+        />
+      ))}
     </>
   );
 };

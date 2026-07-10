@@ -1,0 +1,17 @@
+{
+  "contactName": "New Friend",
+  "messages": [
+    { "sender": "them", "text": "so nice meeting you at the thing tonight!", "delay": 0.4 },
+    { "sender": "me", "text": "likewise!! great talking to you", "delay": 0.7 },
+    { "sender": "them", "text": "we should grab coffee sometime", "delay": 1.2 },
+    { "sender": "me", "text": "definitely, I'll text you", "delay": 1.5, "typing": true },
+    { "sender": "me", "text": "wait what was your name again 😅", "delay": 1.1 },
+    { "sender": "them", "text": "...it's Alex. I told you twice tonight", "delay": 1.6 },
+    { "sender": "me", "text": "no yeah I know it's Alex", "delay": 1.7, "typing": true },
+    { "sender": "me", "text": "I was making sure YOU remembered 👀", "delay": 1.0 },
+    { "sender": "them", "text": "I'm wearing a name tag right now", "delay": 1.4 },
+    { "sender": "me", "text": "🙃", "delay": 1.1 },
+    { "sender": "me", "text": "anyway, coffee soon!", "delay": 1.5, "typing": true }
+  ],
+  "revealLine": "Built Recalla because I kept doing this."
+}

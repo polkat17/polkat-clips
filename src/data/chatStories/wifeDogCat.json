@@ -1,0 +1,17 @@
+{
+  "contactName": "Jordan",
+  "messages": [
+    { "sender": "them", "text": "hey!! so good running into you today", "delay": 0.4 },
+    { "sender": "me", "text": "yes omg so good seeing you", "delay": 0.7 },
+    { "sender": "them", "text": "how's your wife doing?", "delay": 1.2 },
+    { "sender": "me", "text": "oh she's great, super busy with work lately", "delay": 1.6, "typing": true },
+    { "sender": "them", "text": "...I'm not married", "delay": 1.3 },
+    { "sender": "me", "text": "right, totally knew that", "delay": 1.7, "typing": true },
+    { "sender": "me", "text": "meant to say — how's the dog", "delay": 1.0 },
+    { "sender": "them", "text": "I have a cat", "delay": 1.4 },
+    { "sender": "me", "text": "🙃", "delay": 1.1 },
+    { "sender": "them", "text": "we've hung out four times", "delay": 1.3 },
+    { "sender": "me", "text": "anyways!! so good seeing you", "delay": 1.5, "typing": true }
+  ],
+  "revealLine": "Built Recalla because I kept doing this."
+}

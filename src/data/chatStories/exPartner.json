@@ -1,0 +1,17 @@
+{
+  "contactName": "Marcus",
+  "messages": [
+    { "sender": "them", "text": "hey stranger", "delay": 0.4 },
+    { "sender": "me", "text": "heyyy how are you", "delay": 0.7 },
+    { "sender": "them", "text": "good, good", "delay": 1.0 },
+    { "sender": "me", "text": "how's Jess? still downtown?", "delay": 1.6, "typing": true },
+    { "sender": "them", "text": "Jess?", "delay": 1.3 },
+    { "sender": "them", "text": "we broke up.", "delay": 0.5 },
+    { "sender": "them", "text": "eight months ago.", "delay": 0.5 },
+    { "sender": "me", "text": "right, I knew that", "delay": 1.6, "typing": true },
+    { "sender": "them", "text": "you helped me move out", "delay": 1.4 },
+    { "sender": "me", "text": "💀", "delay": 1.1 },
+    { "sender": "me", "text": "this explains a lot", "delay": 1.4, "typing": true }
+  ],
+  "revealLine": "Built because I kept doing this."
+}
