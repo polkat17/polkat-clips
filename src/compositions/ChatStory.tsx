@@ -55,16 +55,29 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 // best-joke line noticeably more room than setup lines, and give a message
 // a tiny `delay` (~0.2s) with no `typing` to mimic a real double-send — two
 // bubbles from the same sender landing almost on top of each other.
-// `timeGap` on a message renders a small "2m"-style divider before it, for
-// a beat that should read as more real-world time passing than the video
-// itself spends on it.
+//
+// Two deliberately non-native "added in post" elements, distinct from the
+// rest of the chat UI on purpose — real creators editing screen recordings
+// mix genuine app chrome with obviously-added captions, and that mix reads
+// as more authentic than a pristine native mockup:
+//   - `headerCaption` (required) replaces the plain contact name with bold
+//     editorial framing ("THE FRIEND WHOSE JOB I FORGOT") — sets context
+//     the way a creator's own added label would, not a system UI element.
+//   - `skip` on a message renders a bold red "10 MINUTES LATER"-style
+//     jump-cut caption before that message appears. Use it at a point where
+//     a real pause would happen (composing an awkward reply), not mid-reveal
+//     — splitting a two-part gut-punch line with a time-skip undercuts it.
+//     Red is intentional: it's the one color in the format that isn't part
+//     of the brand or the native-chat palette, reserved for this.
 
 const TYPING_DURATION_SECONDS = 0.9; // fallback when a message doesn't set typingSeconds
+const SKIP_HOLD_SECONDS = 1.3; // fallback when a message doesn't set skipSeconds
 const HOLD_AFTER_LAST_MESSAGE = 1.5; // seconds to let the punchline sit
 const TAG_DURATION = 1.75; // seconds — "don't let it become an advert"
 const HEADER_HEIGHT = 130;
 const HOOK_VISIBLE_SECONDS = 2.3; // gone before the "oh no" line lands
 const DELIVERED_DELAY_SECONDS = 0.5; // "Delivered" appears a beat after the last bubble, not instantly
+const SKIP_RED = "#FF3B30"; // the one non-brand, non-native color — reserved for the jump-cut caption
 
 export type ChatMessage = {
   sender: "me" | "them";
@@ -72,13 +85,15 @@ export type ChatMessage = {
   delay: number; // seconds after the previous message before this one appears
   typing?: boolean; // show a typing-indicator bubble just before this message
   typingSeconds?: number; // overrides TYPING_DURATION_SECONDS for this message's typing beat
-  timeGap?: string; // e.g. "2m" — renders a small time divider before this message
+  skip?: string; // bold red "added in post" jump-cut caption shown before this message
+  skipSeconds?: number; // overrides SKIP_HOLD_SECONDS for this message's skip caption
 };
 
 // A type alias (not an interface) so it structurally satisfies the
 // `Record<string, unknown>` constraint Remotion's <Composition> generics need.
 export type ChatStoryProps = {
   contactName: string;
+  headerCaption: string; // bold editorial label shown in the header instead of the plain name
   hook: string; // bold first-frame line — states the curiosity hook up front
   messages: ChatMessage[];
   revealLine: string;
@@ -88,18 +103,26 @@ export type ChatStoryProps = {
 type ScheduledMessage = ChatMessage & {
   appearAtFrame: number;
   typingStartFrame: number | null;
+  skipStartFrame: number | null;
+  skipEndFrame: number | null;
 };
 
 function scheduleMessages(messages: ChatMessage[]): ScheduledMessage[] {
   let cursorSeconds = 0;
   return messages.map((message) => {
+    const gapStartSeconds = cursorSeconds;
     cursorSeconds += message.delay;
     const appearAtFrame = Math.round(cursorSeconds * FPS);
     const typingSeconds = message.typingSeconds ?? TYPING_DURATION_SECONDS;
     const typingStartFrame = message.typing
       ? Math.round((cursorSeconds - typingSeconds) * FPS)
       : null;
-    return { ...message, appearAtFrame, typingStartFrame };
+    const skipStartFrame = message.skip ? Math.round(gapStartSeconds * FPS) : null;
+    const skipEndFrame =
+      skipStartFrame !== null
+        ? skipStartFrame + Math.round((message.skipSeconds ?? SKIP_HOLD_SECONDS) * FPS)
+        : null;
+    return { ...message, appearAtFrame, typingStartFrame, skipStartFrame, skipEndFrame };
   });
 }
 
@@ -116,6 +139,7 @@ export function getChatStoryDurationInFrames(
 
 export const ChatStory: React.FC<ChatStoryProps> = ({
   contactName,
+  headerCaption,
   hook,
   messages,
   revealLine,
@@ -134,7 +158,7 @@ export const ChatStory: React.FC<ChatStoryProps> = ({
           the same note in ListStory.tsx for why that beats baking one in. */}
 
       <Sequence durationInFrames={conversationFrames}>
-        <ConversationPhase contactName={contactName} hook={hook} schedule={schedule} />
+        <ConversationPhase contactName={contactName} headerCaption={headerCaption} hook={hook} schedule={schedule} />
       </Sequence>
 
       {!skipReveal && (
@@ -148,9 +172,10 @@ export const ChatStory: React.FC<ChatStoryProps> = ({
 
 const ConversationPhase: React.FC<{
   contactName: string;
+  headerCaption: string;
   hook: string;
   schedule: ScheduledMessage[];
-}> = ({ contactName, hook, schedule }) => {
+}> = ({ contactName, headerCaption, hook, schedule }) => {
   const frame = useCurrentFrame();
 
   const visible = schedule.filter((m) => m.appearAtFrame <= frame);
@@ -160,6 +185,11 @@ const ConversationPhase: React.FC<{
     nextHidden?.typingStartFrame !== undefined &&
     frame >= nextHidden.typingStartFrame &&
     frame < nextHidden.appearAtFrame;
+  const showSkip =
+    nextHidden?.skipStartFrame != null &&
+    nextHidden?.skipEndFrame != null &&
+    frame >= nextHidden.skipStartFrame &&
+    frame < nextHidden.skipEndFrame;
 
   const lastMessage = schedule[schedule.length - 1];
   const showDelivered =
@@ -168,7 +198,7 @@ const ConversationPhase: React.FC<{
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
-      <ChatHeader contactName={contactName} />
+      <ChatHeader contactName={contactName} headerCaption={headerCaption} />
 
       <AbsoluteFill
         style={{
@@ -183,42 +213,24 @@ const ConversationPhase: React.FC<{
         }}
       >
         {visible.map((message, i) => (
-          <React.Fragment key={i}>
-            {message.timeGap && <TimeDivider label={message.timeGap} />}
-            <MessageBubble
-              sender={message.sender}
-              text={message.text}
-              frame={frame}
-              appearAtFrame={message.appearAtFrame}
-              showDelivered={message === lastMessage && showDelivered}
-            />
-          </React.Fragment>
+          <MessageBubble
+            key={i}
+            sender={message.sender}
+            text={message.text}
+            frame={frame}
+            appearAtFrame={message.appearAtFrame}
+            showDelivered={message === lastMessage && showDelivered}
+          />
         ))}
         {showTyping && nextHidden && <TypingBubble sender={nextHidden.sender} />}
       </AbsoluteFill>
 
       <HookBanner text={hook} frame={frame} />
+
+      {showSkip && nextHidden?.skip && <SkipCaption text={nextHidden.skip} />}
     </AbsoluteFill>
   );
 };
-
-// A muted centered label between bubbles — the same device iMessage uses to
-// mark a real gap in time. Signals more time passed than the video spends
-// showing, without needing an actual pause.
-const TimeDivider: React.FC<{ label: string }> = ({ label }) => (
-  <div
-    style={{
-      alignSelf: "center",
-      fontFamily: MESSAGE_FONT_FAMILY,
-      fontWeight: 400,
-      fontSize: 18,
-      color: "#B0B0B5",
-      margin: "4px 0",
-    }}
-  >
-    {label}
-  </div>
-);
 
 // Sits in the blank space above the conversation (bubbles anchor to the
 // bottom and grow upward, so this area is empty for the first couple of
@@ -266,7 +278,50 @@ const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) 
   );
 };
 
-const ChatHeader: React.FC<{ contactName: string }> = ({ contactName }) => (
+// A jump-cut caption stamped over the (paused) chat — deliberately not
+// trying to look like native UI, the way a creator would mark a time skip
+// in their own edit. Red, hard black stroke, instant pop, no fade — it
+// should read as a cut, not a graceful transition.
+const SkipCaption: React.FC<{ text: string }> = ({ text }) => {
+  const frame = useCurrentFrame();
+  const scale = interpolate(frame, [0, 4], [1.2, 1], { extrapolateRight: "clamp" });
+  const opacity = interpolate(frame, [0, 2], [0, 1], { extrapolateRight: "clamp" });
+
+  return (
+    <AbsoluteFill
+      style={{
+        top: SAFE_ZONE.top + HEADER_HEIGHT,
+        height: VIDEO_HEIGHT - SAFE_ZONE.top - HEADER_HEIGHT - SAFE_ZONE.bottom,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: `0 ${SAFE_ZONE.right}px 0 ${SAFE_ZONE.left}px`,
+        pointerEvents: "none",
+      }}
+    >
+      <CaptionFontStyle />
+      <div
+        style={{
+          opacity,
+          transform: `scale(${scale}) rotate(-2deg)`,
+          fontFamily: CAPTION_FONT_FAMILY,
+          fontWeight: 900,
+          fontSize: 44,
+          color: SKIP_RED,
+          textAlign: "center",
+          textTransform: "uppercase",
+          WebkitTextStroke: "2px black",
+        }}
+      >
+        {text}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const ChatHeader: React.FC<{ contactName: string; headerCaption: string }> = ({
+  contactName,
+  headerCaption,
+}) => (
   <AbsoluteFill
     style={{
       top: SAFE_ZONE.top,
@@ -277,6 +332,7 @@ const ChatHeader: React.FC<{ contactName: string }> = ({ contactName }) => (
       borderBottom: "1px solid #E5E5E5",
     }}
   >
+    <CaptionFontStyle />
     <div
       style={{
         width: 56,
@@ -290,20 +346,24 @@ const ChatHeader: React.FC<{ contactName: string }> = ({ contactName }) => (
         fontWeight: 400,
         fontSize: 24,
         color: "#FFFFFF",
-        marginBottom: 6,
+        marginBottom: 8,
       }}
     >
       {contactName.charAt(0).toUpperCase()}
     </div>
     <div
       style={{
-        fontFamily: MESSAGE_FONT_FAMILY,
-        fontWeight: 400,
-        fontSize: 20,
-        color: "#8E8E93",
+        fontFamily: CAPTION_FONT_FAMILY,
+        fontWeight: 700,
+        fontSize: 22,
+        letterSpacing: 0.5,
+        color: "#1A1A1A",
+        textTransform: "uppercase",
+        textAlign: "center",
+        padding: "0 24px",
       }}
     >
-      {contactName}
+      {headerCaption}
     </div>
   </AbsoluteFill>
 );

@@ -1,5 +1,6 @@
 {
   "contactName": "Priya",
+  "headerCaption": "THE FRIEND WHOSE KID I FORGOT",
   "hook": "I accidentally proved I forgot my own goddaughter existed.",
   "messages": [
     { "sender": "them", "text": "the kids say hi btw", "delay": 0.4 },

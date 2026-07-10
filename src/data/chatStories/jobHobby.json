@@ -1,5 +1,6 @@
 {
   "contactName": "Sam",
+  "headerCaption": "THE FRIEND WHOSE JOB I FORGOT",
   "hook": "I accidentally proved I don't know what my friend of 6 years even does.",
   "messages": [
     { "sender": "them", "text": "work's been insane lately", "delay": 0.4 },

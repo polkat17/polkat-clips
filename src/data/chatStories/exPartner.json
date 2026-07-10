@@ -1,5 +1,6 @@
 {
   "contactName": "Marcus",
+  "headerCaption": "THE FRIEND WHO WENT QUIET",
   "hook": "I accidentally proved I don't know my best friend's life.",
   "messages": [
     { "sender": "them", "text": "hey stranger", "delay": 0.3 },

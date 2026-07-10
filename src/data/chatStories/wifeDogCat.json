@@ -1,5 +1,6 @@
 {
   "contactName": "Jordan",
+  "headerCaption": "THE FRIEND WHOSE WIFE ISN'T REAL",
   "hook": "I accidentally proved I don't remember anything about this friend's life.",
   "messages": [
     { "sender": "them", "text": "hey!! so good running into you today", "delay": 0.4 },

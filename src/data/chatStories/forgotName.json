@@ -1,5 +1,6 @@
 {
   "contactName": "New Friend",
+  "headerCaption": "THE FRIEND WHOSE NAME I FORGOT",
   "hook": "I accidentally proved I forgot someone's name to their face.",
   "messages": [
     { "sender": "them", "text": "so nice meeting you at the thing tonight!", "delay": 0.4 },
