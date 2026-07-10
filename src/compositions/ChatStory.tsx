@@ -39,9 +39,13 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //      Give it the most room of any beat — it's the joke people actually
 //      laugh at, everything else is setup or landing.
 //   6. A dry, understated punchline — owning it beats over-explaining it.
-//   7. Recalla reveal, ~1.5-2s. Wordmark + one line. Don't let it become an
-//      ad. `skipReveal: true` drops this phase entirely — for a first batch
-//      of format-only test posts, so a new account isn't simultaneously
+//      Doesn't have to come from "me" — it can land harder from the other
+//      side, e.g. as a dry aside showing the damage is now a running joke
+//      in their life too, not just something "me" feels guilty about.
+//   7. A real pause before the cut, then the Recalla reveal, ~2s. Wordmark
+//      + one line + "link in bio". Don't let it become an ad.
+//      `skipReveal: true` drops this phase entirely — for a first batch of
+//      format-only test posts, so a new account isn't simultaneously
 //      testing a new format AND a product pitch.
 //
 // All of this has to live inside SAFE_ZONE (src/theme.ts) — confirmed by
@@ -63,17 +67,19 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //   - `headerCaption` (required) replaces the plain contact name with bold
 //     editorial framing ("THE FRIEND WHOSE JOB I FORGOT") — sets context
 //     the way a creator's own added label would, not a system UI element.
-//   - `skip` on a message renders a bold red "10 MINUTES LATER"-style
-//     jump-cut caption before that message appears. Use it at a point where
-//     a real pause would happen (composing an awkward reply), not mid-reveal
-//     — splitting a two-part gut-punch line with a time-skip undercuts it.
-//     Red is intentional: it's the one color in the format that isn't part
-//     of the brand or the native-chat palette, reserved for this.
+//   - `skip` on a message renders a bold red "10 minutes later"-style
+//     jump-cut caption, inline in the message flow directly above that
+//     message (not a floating overlay stamped over the bubbles — that read
+//     as cluttered and hard to read against the text underneath it). Use it
+//     at a point where a real pause would happen (composing an awkward
+//     reply), not mid-reveal — splitting a two-part gut-punch line with a
+//     time-skip undercuts it. Red is intentional: it's the one color in the
+//     format that isn't part of the brand or the native-chat palette,
+//     reserved for this.
 
 const TYPING_DURATION_SECONDS = 0.9; // fallback when a message doesn't set typingSeconds
-const SKIP_HOLD_SECONDS = 1.3; // fallback when a message doesn't set skipSeconds
-const HOLD_AFTER_LAST_MESSAGE = 1.5; // seconds to let the punchline sit
-const TAG_DURATION = 1.75; // seconds — "don't let it become an advert"
+const HOLD_AFTER_LAST_MESSAGE = 2.2; // a real pause before the hard cut to the reveal
+const TAG_DURATION = 2.0; // seconds — "don't let it become an advert"
 const HEADER_HEIGHT = 130;
 const HOOK_VISIBLE_SECONDS = 2.3; // gone before the "oh no" line lands
 const DELIVERED_DELAY_SECONDS = 0.5; // "Delivered" appears a beat after the last bubble, not instantly
@@ -85,8 +91,7 @@ export type ChatMessage = {
   delay: number; // seconds after the previous message before this one appears
   typing?: boolean; // show a typing-indicator bubble just before this message
   typingSeconds?: number; // overrides TYPING_DURATION_SECONDS for this message's typing beat
-  skip?: string; // bold red "added in post" jump-cut caption shown before this message
-  skipSeconds?: number; // overrides SKIP_HOLD_SECONDS for this message's skip caption
+  skip?: string; // bold red "added in post" jump-cut caption, inline right before this message
 };
 
 // A type alias (not an interface) so it structurally satisfies the
@@ -104,7 +109,6 @@ type ScheduledMessage = ChatMessage & {
   appearAtFrame: number;
   typingStartFrame: number | null;
   skipStartFrame: number | null;
-  skipEndFrame: number | null;
 };
 
 function scheduleMessages(messages: ChatMessage[]): ScheduledMessage[] {
@@ -117,12 +121,11 @@ function scheduleMessages(messages: ChatMessage[]): ScheduledMessage[] {
     const typingStartFrame = message.typing
       ? Math.round((cursorSeconds - typingSeconds) * FPS)
       : null;
+    // Fires as soon as the gap before this message begins, and (like a real
+    // divider in a chat history) stays part of the flow permanently once
+    // shown — it doesn't need to fade back out.
     const skipStartFrame = message.skip ? Math.round(gapStartSeconds * FPS) : null;
-    const skipEndFrame =
-      skipStartFrame !== null
-        ? skipStartFrame + Math.round((message.skipSeconds ?? SKIP_HOLD_SECONDS) * FPS)
-        : null;
-    return { ...message, appearAtFrame, typingStartFrame, skipStartFrame, skipEndFrame };
+    return { ...message, appearAtFrame, typingStartFrame, skipStartFrame };
   });
 }
 
@@ -178,18 +181,12 @@ const ConversationPhase: React.FC<{
 }> = ({ contactName, headerCaption, hook, schedule }) => {
   const frame = useCurrentFrame();
 
-  const visible = schedule.filter((m) => m.appearAtFrame <= frame);
   const nextHidden = schedule.find((m) => m.appearAtFrame > frame);
   const showTyping =
     nextHidden?.typingStartFrame !== null &&
     nextHidden?.typingStartFrame !== undefined &&
     frame >= nextHidden.typingStartFrame &&
     frame < nextHidden.appearAtFrame;
-  const showSkip =
-    nextHidden?.skipStartFrame != null &&
-    nextHidden?.skipEndFrame != null &&
-    frame >= nextHidden.skipStartFrame &&
-    frame < nextHidden.skipEndFrame;
 
   const lastMessage = schedule[schedule.length - 1];
   const showDelivered =
@@ -212,22 +209,32 @@ const ConversationPhase: React.FC<{
           gap: 14,
         }}
       >
-        {visible.map((message, i) => (
-          <MessageBubble
-            key={i}
-            sender={message.sender}
-            text={message.text}
-            frame={frame}
-            appearAtFrame={message.appearAtFrame}
-            showDelivered={message === lastMessage && showDelivered}
-          />
-        ))}
-        {showTyping && nextHidden && <TypingBubble sender={nextHidden.sender} />}
+        {schedule.map((message, i) => {
+          const appeared = message.appearAtFrame <= frame;
+          const skipTriggered = message.skipStartFrame !== null && frame >= message.skipStartFrame;
+          const isPendingTyping = message === nextHidden && showTyping;
+
+          return (
+            <React.Fragment key={i}>
+              {skipTriggered && message.skip && (
+                <SkipCaption text={message.skip} frame={frame - message.skipStartFrame!} />
+              )}
+              {appeared && (
+                <MessageBubble
+                  sender={message.sender}
+                  text={message.text}
+                  frame={frame}
+                  appearAtFrame={message.appearAtFrame}
+                  showDelivered={message === lastMessage && showDelivered}
+                />
+              )}
+              {isPendingTyping && <TypingBubble sender={message.sender} />}
+            </React.Fragment>
+          );
+        })}
       </AbsoluteFill>
 
       <HookBanner text={hook} frame={frame} />
-
-      {showSkip && nextHidden?.skip && <SkipCaption text={nextHidden.skip} />}
     </AbsoluteFill>
   );
 };
@@ -278,43 +285,32 @@ const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) 
   );
 };
 
-// A jump-cut caption stamped over the (paused) chat — deliberately not
-// trying to look like native UI, the way a creator would mark a time skip
-// in their own edit. Red, hard black stroke, instant pop, no fade — it
-// should read as a cut, not a graceful transition.
-const SkipCaption: React.FC<{ text: string }> = ({ text }) => {
-  const frame = useCurrentFrame();
-  const scale = interpolate(frame, [0, 4], [1.2, 1], { extrapolateRight: "clamp" });
-  const opacity = interpolate(frame, [0, 2], [0, 1], { extrapolateRight: "clamp" });
+// A jump-cut caption, inline in the message flow (not floating over the
+// bubbles — that made it hard to read against the text underneath).
+// Deliberately not trying to look like native UI, the way a creator would
+// mark a time skip in their own edit: red, hard black stroke, slight tilt.
+const SkipCaption: React.FC<{ text: string; frame: number }> = ({ text, frame }) => {
+  const scale = interpolate(frame, [0, 4], [1.15, 1], { extrapolateRight: "clamp" });
+  const opacity = interpolate(frame, [0, 3], [0, 1], { extrapolateRight: "clamp" });
 
   return (
-    <AbsoluteFill
+    <div
       style={{
-        top: SAFE_ZONE.top + HEADER_HEIGHT,
-        height: VIDEO_HEIGHT - SAFE_ZONE.top - HEADER_HEIGHT - SAFE_ZONE.bottom,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: `0 ${SAFE_ZONE.right}px 0 ${SAFE_ZONE.left}px`,
-        pointerEvents: "none",
+        alignSelf: "center",
+        opacity,
+        transform: `scale(${scale}) rotate(-2deg)`,
+        fontFamily: CAPTION_FONT_FAMILY,
+        fontWeight: 900,
+        fontSize: 26,
+        color: SKIP_RED,
+        textAlign: "center",
+        textTransform: "uppercase",
+        WebkitTextStroke: "1.5px black",
+        margin: "6px 0",
       }}
     >
-      <CaptionFontStyle />
-      <div
-        style={{
-          opacity,
-          transform: `scale(${scale}) rotate(-2deg)`,
-          fontFamily: CAPTION_FONT_FAMILY,
-          fontWeight: 900,
-          fontSize: 44,
-          color: SKIP_RED,
-          textAlign: "center",
-          textTransform: "uppercase",
-          WebkitTextStroke: "2px black",
-        }}
-      >
-        {text}
-      </div>
-    </AbsoluteFill>
+      {text}
+    </div>
   );
 };
 

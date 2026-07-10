@@ -4,10 +4,13 @@ import { CAPTION_FONT_FAMILY, CaptionFontStyle } from "../../loadCaptionFont";
 
 // The closing beat for every "native-format" composition (ListStory,
 // BaxterClip, ChatStory): logo pops in, then the "Recalla" wordmark, then
-// the tagline — bold instant-pop text throughout, not EndCard's slower
-// fade-to-brand-color treatment, which reads as too polished/cinematic for
-// this format. Tuned to read clearly even at ~1.5-2s (ChatStory's reveal is
-// deliberately short — "don't let it become an advert").
+// the tagline, then "link in bio" — bold instant-pop text throughout, not
+// EndCard's slower fade-to-brand-color treatment, which reads as too
+// polished/cinematic for this format. Tuned to read clearly even at ~2s
+// (ChatStory's reveal is deliberately short — "don't let it become an
+// advert"). "link in bio" matters here specifically because Shorts/TikTok
+// descriptions don't render clickable links — the channel bio link is the
+// only clickable path, so the video has to say so.
 export const NativeTagCard: React.FC<{ text: string }> = ({ text }) => {
   const frame = useCurrentFrame();
 
@@ -21,6 +24,9 @@ export const NativeTagCard: React.FC<{ text: string }> = ({ text }) => {
     extrapolateRight: "clamp",
   });
   const taglineOpacity = interpolate(frame, [10, 15], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+  const linkOpacity = interpolate(frame, [20, 26], [0, 1], {
     extrapolateRight: "clamp",
   });
 
@@ -69,6 +75,19 @@ export const NativeTagCard: React.FC<{ text: string }> = ({ text }) => {
         }}
       >
         {text}
+      </div>
+      <div
+        style={{
+          opacity: linkOpacity,
+          fontFamily: CAPTION_FONT_FAMILY,
+          fontWeight: 700,
+          fontSize: 22,
+          color: "#FFFFFF",
+          textAlign: "center",
+          marginTop: 22,
+        }}
+      >
+        link in bio
       </div>
     </AbsoluteFill>
   );
