@@ -1,0 +1,16 @@
+{
+  "contactName": "Ella",
+  "hook": "I accidentally invented my best friend's whole career.",
+  "messages": [
+    { "sender": "them", "text": "saw you at Jake's thing", "delay": 0.3 },
+    { "sender": "me", "text": "yeah!! told everyone about your startup", "delay": 0.6, "typing": true },
+    { "sender": "them", "text": "I don't have a startup", "delay": 1.0 },
+    { "sender": "them", "text": "I got laid off.", "delay": 0.4 },
+    { "sender": "them", "text": "eight months ago.", "delay": 0.4 },
+    { "sender": "me", "text": "the Series A, right?", "delay": 1.2, "typing": true },
+    { "sender": "them", "text": "you told my mom I was \"basically Mark Zuckerberg\"", "delay": 1.1, "typing": true },
+    { "sender": "me", "text": "💀", "delay": 0.9 },
+    { "sender": "me", "text": "she still asks about the IPO", "delay": 1.2, "typing": true }
+  ],
+  "revealLine": "Built because I kept doing this."
+}
