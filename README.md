@@ -21,17 +21,40 @@ awkward, then a hard cut to the Recalla reveal. Cheapest format to produce
 (nothing to fetch, no per-clip cost) and the best fit for what Remotion is
 actually good at: data-driven UI animation.
 
-Every episode follows the same 7-beat structure (documented in full at the
-top of `ChatStory.tsx`) so the format becomes recognizable across episodes:
-normal conversation → one innocent mistake → a curt correction → a failed
-recovery attempt → one specific, much-worse detail → a dry punchline → a
-short (~1.5-2s) reveal. One composition per concept, in
+Every episode follows the same 8-beat structure (documented in full at the
+top of `ChatStory.tsx`) so the format becomes recognizable across episodes: a
+bold hook line from frame 0 → normal conversation → one innocent mistake → a
+curt correction → a failed recovery attempt → one specific, much-worse detail
+→ a dry punchline → a short (~1.5-2s) reveal. One composition per concept, in
 `src/data/chatStories/*.json` — edit the conversation there, not in the
 `.tsx` file.
 
 ```bash
 npx remotion render ChatStory-ex-partner out/ex-partner.mp4
 ```
+
+**Hook line (`hook` field):** plain bold text, no background box, sitting in
+the blank space above the conversation for the first ~2.3s — bubbles anchor
+to the bottom and grow upward, so that space is naturally empty early on. A
+solid dark banner was the first version of this and it read as an ad slide
+glued on top of the chat rather than part of it; keep it as bare text.
+States the curiosity hook up front (what's about to go wrong) without
+spoiling the specific punchline — real-world feedback on the first posted
+episode was that "hey stranger" / "heyyy how are you" gave viewers nothing to
+stay for. Full opacity from frame 0, since that's usually the thumbnail
+frame too.
+
+**Safe zones:** all layout in `ChatStory.tsx` (header, bubbles, hook line) is
+positioned inside `SAFE_ZONE` from `src/theme.ts`, not the full 1080x1920
+canvas. This isn't a theoretical margin — a posted episode had its top and
+right edges genuinely covered by TikTok/Shorts UI chrome (profile bar,
+caption/sound bar, like/comment/share column). Keep any new on-screen element
+inside those bounds, and re-check `SAFE_ZONE`'s numbers occasionally, since
+platforms resize their own overlays over time.
+
+**`skipReveal: true`** on any script drops the Recalla card entirely — for a
+first batch of format-only test posts, so a new account isn't simultaneously
+testing a new format, a new account, and a product pitch all at once.
 
 Known limitation, not solved here: trending audio is a TikTok-native concept
 applied at upload time, not something to bake into the render — see the TODO
@@ -81,7 +104,8 @@ variant in `public/screen-recordings/`.
 ## Structure
 
 - `src/theme.ts` — shared brand colors/fonts/FPS/dimensions for every
-  composition.
+  composition, plus `SAFE_ZONE` — the on-screen box that stays clear of
+  TikTok/Reels/Shorts UI chrome (see the ChatStory section above).
 - `src/compositions/shared/NativeTagCard.tsx` — the current reveal treatment
   (logo → "Recalla" wordmark → tagline, all bold instant-pop), used by
   `ChatStory` and `BaxterClip`.

@@ -1,6 +1,6 @@
 import React from "react";
 import { AbsoluteFill, Sequence, useCurrentFrame, interpolate } from "remotion";
-import { FPS, VIDEO_HEIGHT } from "../theme";
+import { FPS, VIDEO_HEIGHT, SAFE_ZONE } from "../theme";
 import { MESSAGE_FONT_FAMILY, MessageFontStyle } from "../loadMessageFont";
 import { CAPTION_FONT_FAMILY, CaptionFontStyle } from "../loadCaptionFont";
 import { NativeTagCard } from "./shared/NativeTagCard";
@@ -12,11 +12,16 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //
 // Every episode should follow the same structure, so viewers start
 // recognizing the format and watch just to see how it goes wrong:
-//   0. A bold hook line overlaid on screen from frame 0 — the chat starts
-//      immediately underneath it, no dead pre-roll. Real-world feedback on
-//      the first render: the opening "hey stranger" / "heyyy how are you"
-//      read as filler with no reason to keep watching — curiosity has to be
-//      stated up front, not earned three lines in.
+//   0. A bold hook line, visible from frame 0 — the chat starts immediately
+//      underneath it, no dead pre-roll. Real-world feedback on the first
+//      render: the opening "hey stranger" / "heyyy how are you" read as
+//      filler with no reason to keep watching — curiosity has to be stated
+//      up front, not earned three lines in. It sits in the natural empty
+//      space above the conversation (bubbles anchor to the bottom and grow
+//      upward, so the top of the screen is blank early on) as plain bold
+//      ink-colored text — no dark title-card box. A solid overlay banner
+//      was the first attempt and it read as a slapped-on ad slide, not
+//      part of the conversation.
 //   1. Normal conversation, kept to 1-2 short lines — the first "oh no"
 //      moment needs to land by ~3-4s, not 5+. Cut anything a viewer doesn't
 //      strictly need to track the joke; the eye reads faster than natural
@@ -36,12 +41,17 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //      ad. `skipReveal: true` drops this phase entirely — for a first batch
 //      of format-only test posts, so a new account isn't simultaneously
 //      testing a new format AND a product pitch.
+//
+// All of this has to live inside SAFE_ZONE (src/theme.ts) — confirmed by
+// real posted-video feedback that TikTok/Reels/Shorts chrome (profile bar,
+// caption/sound/engagement rail, like/comment/share column) genuinely
+// covers anything outside it, not just a theoretical template margin.
 
 const TYPING_DURATION_SECONDS = 0.9;
 const HOLD_AFTER_LAST_MESSAGE = 1.5; // seconds to let the punchline sit
 const TAG_DURATION = 1.75; // seconds — "don't let it become an advert"
-const HEADER_HEIGHT = 160;
-const HOOK_VISIBLE_SECONDS = 2.3; // overlay is gone before the "oh no" line lands
+const HEADER_HEIGHT = 130;
+const HOOK_VISIBLE_SECONDS = 2.3; // gone before the "oh no" line lands
 
 export type ChatMessage = {
   sender: "me" | "them";
@@ -54,7 +64,7 @@ export type ChatMessage = {
 // `Record<string, unknown>` constraint Remotion's <Composition> generics need.
 export type ChatStoryProps = {
   contactName: string;
-  hook: string; // bold first-frame overlay — states the curiosity hook up front
+  hook: string; // bold first-frame line — states the curiosity hook up front
   messages: ChatMessage[];
   revealLine: string;
   skipReveal?: boolean; // omit the Recalla card entirely (format-only test posts)
@@ -141,13 +151,13 @@ const ConversationPhase: React.FC<{
 
       <AbsoluteFill
         style={{
-          top: HEADER_HEIGHT,
-          height: VIDEO_HEIGHT - HEADER_HEIGHT,
+          top: SAFE_ZONE.top + HEADER_HEIGHT,
+          height: VIDEO_HEIGHT - SAFE_ZONE.top - HEADER_HEIGHT - SAFE_ZONE.bottom,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
           overflow: "hidden",
-          padding: "0 32px 48px",
+          padding: `0 ${SAFE_ZONE.right}px 24px ${SAFE_ZONE.left}px`,
           gap: 14,
         }}
       >
@@ -168,14 +178,15 @@ const ConversationPhase: React.FC<{
   );
 };
 
-// Bold curiosity line, visible from frame 0 (chat starts underneath it
-// immediately — no dead pre-roll), fading out well before the first
-// misunderstanding lands so it never competes with the punchline text.
+// Sits in the blank space above the conversation (bubbles anchor to the
+// bottom and grow upward, so this area is empty for the first couple of
+// seconds anyway) as plain bold text — no box, no background — so it reads
+// as part of the chat rather than an ad slide stuck on top of it. Full
+// opacity from frame 0 (that's often the thumbnail frame) and gone well
+// before the first misunderstanding lands.
 const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) => {
   const visibleFrames = Math.round(HOOK_VISIBLE_SECONDS * FPS);
   const fadeStart = visibleFrames - 12;
-  // Full opacity from frame 0 — this is often the thumbnail frame, so the
-  // hook can't be mid-fade-in the one time it matters most.
   const opacity = interpolate(frame, [fadeStart, visibleFrames], [1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -186,12 +197,12 @@ const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) 
   return (
     <AbsoluteFill
       style={{
-        top: 0,
-        height: HEADER_HEIGHT + 60,
-        justifyContent: "center",
+        top: SAFE_ZONE.top + HEADER_HEIGHT + 24,
+        height: 220,
+        justifyContent: "flex-start",
         alignItems: "center",
-        backgroundColor: `rgba(0,0,0,${0.82 * opacity})`,
-        padding: "0 56px",
+        padding: `0 ${SAFE_ZONE.right}px 0 ${SAFE_ZONE.left}px`,
+        pointerEvents: "none",
       }}
     >
       <CaptionFontStyle />
@@ -200,10 +211,11 @@ const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) 
           opacity,
           fontFamily: CAPTION_FONT_FAMILY,
           fontWeight: 700,
-          fontSize: 40,
-          lineHeight: 1.25,
-          color: "#FFFFFF",
+          fontSize: 38,
+          lineHeight: 1.3,
+          color: "#1A1A1A",
           textAlign: "center",
+          textShadow: "0 2px 10px rgba(0,0,0,0.12)",
         }}
       >
         {text}
@@ -215,7 +227,7 @@ const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) 
 const ChatHeader: React.FC<{ contactName: string }> = ({ contactName }) => (
   <AbsoluteFill
     style={{
-      top: 0,
+      top: SAFE_ZONE.top,
       height: HEADER_HEIGHT,
       justifyContent: "flex-end",
       alignItems: "center",
@@ -225,8 +237,8 @@ const ChatHeader: React.FC<{ contactName: string }> = ({ contactName }) => (
   >
     <div
       style={{
-        width: 64,
-        height: 64,
+        width: 56,
+        height: 56,
         borderRadius: "50%",
         backgroundColor: "#C8A97E",
         display: "flex",
@@ -234,9 +246,9 @@ const ChatHeader: React.FC<{ contactName: string }> = ({ contactName }) => (
         justifyContent: "center",
         fontFamily: MESSAGE_FONT_FAMILY,
         fontWeight: 400,
-        fontSize: 26,
+        fontSize: 24,
         color: "#FFFFFF",
-        marginBottom: 8,
+        marginBottom: 6,
       }}
     >
       {contactName.charAt(0).toUpperCase()}
@@ -245,7 +257,7 @@ const ChatHeader: React.FC<{ contactName: string }> = ({ contactName }) => (
       style={{
         fontFamily: MESSAGE_FONT_FAMILY,
         fontWeight: 400,
-        fontSize: 22,
+        fontSize: 20,
         color: "#8E8E93",
       }}
     >
