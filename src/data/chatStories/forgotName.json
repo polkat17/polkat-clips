@@ -1,5 +1,6 @@
 {
   "contactName": "New Friend",
+  "hook": "I accidentally proved I forgot someone's name to their face.",
   "messages": [
     { "sender": "them", "text": "so nice meeting you at the thing tonight!", "delay": 0.4 },
     { "sender": "me", "text": "likewise!! great talking to you", "delay": 0.7 },
@@ -13,5 +14,5 @@
     { "sender": "me", "text": "🙃", "delay": 1.1 },
     { "sender": "me", "text": "anyway, coffee soon!", "delay": 1.5, "typing": true }
   ],
-  "revealLine": "Built Recalla because I kept doing this."
+  "revealLine": "Built because I kept doing this."
 }

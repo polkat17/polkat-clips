@@ -2,6 +2,7 @@ import React from "react";
 import { AbsoluteFill, Sequence, useCurrentFrame, interpolate } from "remotion";
 import { FPS, VIDEO_HEIGHT } from "../theme";
 import { MESSAGE_FONT_FAMILY, MessageFontStyle } from "../loadMessageFont";
+import { CAPTION_FONT_FAMILY, CaptionFontStyle } from "../loadCaptionFont";
 import { NativeTagCard } from "./shared/NativeTagCard";
 
 // The whole video happens inside a messaging app: no footage, no actors, no
@@ -11,7 +12,15 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //
 // Every episode should follow the same structure, so viewers start
 // recognizing the format and watch just to see how it goes wrong:
-//   1. Normal conversation (has to read as ordinary within ~2s).
+//   0. A bold hook line overlaid on screen from frame 0 — the chat starts
+//      immediately underneath it, no dead pre-roll. Real-world feedback on
+//      the first render: the opening "hey stranger" / "heyyy how are you"
+//      read as filler with no reason to keep watching — curiosity has to be
+//      stated up front, not earned three lines in.
+//   1. Normal conversation, kept to 1-2 short lines — the first "oh no"
+//      moment needs to land by ~3-4s, not 5+. Cut anything a viewer doesn't
+//      strictly need to track the joke; the eye reads faster than natural
+//      texting rhythm suggests.
 //   2. One innocent mistake (a wrong assumption, not an absurd one).
 //   3. The other person reveals you're wrong — in short, matter-of-fact
 //      texts, not one long explanatory message. A beat of silence before
@@ -20,14 +29,19 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //   4. You try to recover with a typing-indicator beat, then a lie.
 //   5. The other person reveals it's much worse — one specific, concrete
 //      detail ("you helped me move out"), not a vague one ("you were
-//      there"). Specificity is what makes it land.
+//      there"). Give this one a typing-indicator beat too: the pause is
+//      itself "acting" and builds tension before the worse detail lands.
 //   6. A dry, understated punchline — owning it beats over-explaining it.
-//   7. Recalla reveal, ~1.5-2s. Wordmark + one line. Don't let it become an ad.
+//   7. Recalla reveal, ~1.5-2s. Wordmark + one line. Don't let it become an
+//      ad. `skipReveal: true` drops this phase entirely — for a first batch
+//      of format-only test posts, so a new account isn't simultaneously
+//      testing a new format AND a product pitch.
 
 const TYPING_DURATION_SECONDS = 0.9;
 const HOLD_AFTER_LAST_MESSAGE = 1.5; // seconds to let the punchline sit
 const TAG_DURATION = 1.75; // seconds — "don't let it become an advert"
 const HEADER_HEIGHT = 160;
+const HOOK_VISIBLE_SECONDS = 2.3; // overlay is gone before the "oh no" line lands
 
 export type ChatMessage = {
   sender: "me" | "them";
@@ -40,8 +54,10 @@ export type ChatMessage = {
 // `Record<string, unknown>` constraint Remotion's <Composition> generics need.
 export type ChatStoryProps = {
   contactName: string;
+  hook: string; // bold first-frame overlay — states the curiosity hook up front
   messages: ChatMessage[];
   revealLine: string;
+  skipReveal?: boolean; // omit the Recalla card entirely (format-only test posts)
 };
 
 type ScheduledMessage = ChatMessage & {
@@ -61,22 +77,28 @@ function scheduleMessages(messages: ChatMessage[]): ScheduledMessage[] {
   });
 }
 
-export function getChatStoryDurationInFrames(messages: ChatMessage[]): number {
+export function getChatStoryDurationInFrames(
+  messages: ChatMessage[],
+  skipReveal?: boolean
+): number {
   const schedule = scheduleMessages(messages);
   const lastAppearFrame = schedule[schedule.length - 1]?.appearAtFrame ?? 0;
   const conversationFrames = lastAppearFrame + Math.round(HOLD_AFTER_LAST_MESSAGE * FPS);
-  return conversationFrames + Math.round(TAG_DURATION * FPS);
+  const tagFrames = skipReveal ? 0 : Math.round(TAG_DURATION * FPS);
+  return conversationFrames + tagFrames;
 }
 
 export const ChatStory: React.FC<ChatStoryProps> = ({
   contactName,
+  hook,
   messages,
   revealLine,
+  skipReveal,
 }) => {
   const schedule = scheduleMessages(messages);
   const lastAppearFrame = schedule[schedule.length - 1]?.appearAtFrame ?? 0;
   const conversationFrames = lastAppearFrame + Math.round(HOLD_AFTER_LAST_MESSAGE * FPS);
-  const tagFrames = Math.round(TAG_DURATION * FPS);
+  const tagFrames = skipReveal ? 0 : Math.round(TAG_DURATION * FPS);
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
@@ -86,20 +108,23 @@ export const ChatStory: React.FC<ChatStoryProps> = ({
           the same note in ListStory.tsx for why that beats baking one in. */}
 
       <Sequence durationInFrames={conversationFrames}>
-        <ConversationPhase contactName={contactName} schedule={schedule} />
+        <ConversationPhase contactName={contactName} hook={hook} schedule={schedule} />
       </Sequence>
 
-      <Sequence from={conversationFrames} durationInFrames={tagFrames}>
-        <NativeTagCard text={revealLine} />
-      </Sequence>
+      {!skipReveal && (
+        <Sequence from={conversationFrames} durationInFrames={tagFrames}>
+          <NativeTagCard text={revealLine} />
+        </Sequence>
+      )}
     </AbsoluteFill>
   );
 };
 
 const ConversationPhase: React.FC<{
   contactName: string;
+  hook: string;
   schedule: ScheduledMessage[];
-}> = ({ contactName, schedule }) => {
+}> = ({ contactName, hook, schedule }) => {
   const frame = useCurrentFrame();
 
   const visible = schedule.filter((m) => m.appearAtFrame <= frame);
@@ -137,6 +162,52 @@ const ConversationPhase: React.FC<{
         ))}
         {showTyping && nextHidden && <TypingBubble sender={nextHidden.sender} />}
       </AbsoluteFill>
+
+      <HookBanner text={hook} frame={frame} />
+    </AbsoluteFill>
+  );
+};
+
+// Bold curiosity line, visible from frame 0 (chat starts underneath it
+// immediately — no dead pre-roll), fading out well before the first
+// misunderstanding lands so it never competes with the punchline text.
+const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) => {
+  const visibleFrames = Math.round(HOOK_VISIBLE_SECONDS * FPS);
+  const fadeStart = visibleFrames - 12;
+  // Full opacity from frame 0 — this is often the thumbnail frame, so the
+  // hook can't be mid-fade-in the one time it matters most.
+  const opacity = interpolate(frame, [fadeStart, visibleFrames], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  if (opacity <= 0) return null;
+
+  return (
+    <AbsoluteFill
+      style={{
+        top: 0,
+        height: HEADER_HEIGHT + 60,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: `rgba(0,0,0,${0.82 * opacity})`,
+        padding: "0 56px",
+      }}
+    >
+      <CaptionFontStyle />
+      <div
+        style={{
+          opacity,
+          fontFamily: CAPTION_FONT_FAMILY,
+          fontWeight: 700,
+          fontSize: 40,
+          lineHeight: 1.25,
+          color: "#FFFFFF",
+          textAlign: "center",
+        }}
+      >
+        {text}
+      </div>
     </AbsoluteFill>
   );
 };

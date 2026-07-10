@@ -1,5 +1,6 @@
 {
   "contactName": "Priya",
+  "hook": "I accidentally proved I forgot my own goddaughter existed.",
   "messages": [
     { "sender": "them", "text": "the kids say hi btw", "delay": 0.4 },
     { "sender": "me", "text": "aw tell them I say hi!!", "delay": 0.7 },
@@ -12,5 +13,5 @@
     { "sender": "me", "text": "🙃🙃", "delay": 1.2 },
     { "sender": "me", "text": "tell her I love her!!", "delay": 1.5, "typing": true }
   ],
-  "revealLine": "Built Recalla because I kept doing this."
+  "revealLine": "Built because I kept doing this."
 }

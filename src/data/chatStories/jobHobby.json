@@ -1,5 +1,6 @@
 {
   "contactName": "Sam",
+  "hook": "I accidentally proved I don't know what my friend of 6 years even does.",
   "messages": [
     { "sender": "them", "text": "work's been insane lately", "delay": 0.4 },
     { "sender": "me", "text": "oh no what happened", "delay": 0.7 },
@@ -13,5 +14,5 @@
     { "sender": "them", "text": "we've been friends for six years", "delay": 1.4 },
     { "sender": "me", "text": "and every one of them a gift", "delay": 1.6, "typing": true }
   ],
-  "revealLine": "Built Recalla because I kept doing this."
+  "revealLine": "Built because I kept doing this."
 }

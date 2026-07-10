@@ -139,7 +139,7 @@ export const RemotionRoot: React.FC = () => {
           key={id}
           id={`ChatStory-${id}`}
           component={ChatStory}
-          durationInFrames={getChatStoryDurationInFrames(data.messages)}
+          durationInFrames={getChatStoryDurationInFrames(data.messages, data.skipReveal)}
           fps={FPS}
           width={VIDEO_WIDTH}
           height={VIDEO_HEIGHT}
