@@ -80,6 +80,13 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 //     that doesn't start immediately after — a skip caption that fires the
 //     instant the previous bubble lands, followed immediately by typing,
 //     reads as rushed rather than as an actual jump in time.
+//
+// `impact: true` on a message (reserve it for the worst-detail beat, maybe
+// one other) triggers a harder punch-in and a brief decaying shake instead
+// of the standard soft pop — the same reason a real editor punches in on
+// the line that matters rather than holding one static shot throughout.
+// A one-frame white flash sells the "cut" the same way TwistPhase does in
+// ListStory.tsx. If every bubble gets it, none of them read as emphasis.
 
 const TYPING_DURATION_SECONDS = 0.9; // fallback when a message doesn't set typingSeconds
 const HOLD_AFTER_LAST_MESSAGE = 2.2; // a real pause before the hard cut to the reveal
@@ -97,6 +104,7 @@ export type ChatMessage = {
   typingSeconds?: number; // overrides TYPING_DURATION_SECONDS for this message's typing beat
   skip?: string; // bold red "added in post" jump-cut caption, inline right before this message
   skipDelay?: number; // seconds after the previous message before the skip caption itself appears
+  impact?: boolean; // harder punch-in + shake + flash instead of the standard pop — reserve for the laugh line
 };
 
 // A type alias (not an interface) so it structurally satisfies the
@@ -201,6 +209,10 @@ const ConversationPhase: React.FC<{
     lastMessage.sender === "me" &&
     frame >= lastMessage.appearAtFrame + Math.round(DELIVERED_DELAY_SECONDS * FPS);
 
+  const impactMessage = schedule.find(
+    (m) => m.impact && frame >= m.appearAtFrame && frame < m.appearAtFrame + 2
+  );
+
   return (
     <AbsoluteFill style={{ backgroundColor: "#FFFFFF" }}>
       <ChatHeader contactName={contactName} headerCaption={headerCaption} />
@@ -233,6 +245,7 @@ const ConversationPhase: React.FC<{
                   text={message.text}
                   frame={frame}
                   appearAtFrame={message.appearAtFrame}
+                  impact={message.impact}
                   showDelivered={message === lastMessage && showDelivered}
                 />
               )}
@@ -243,8 +256,21 @@ const ConversationPhase: React.FC<{
       </AbsoluteFill>
 
       <HookBanner text={hook} frame={frame} />
+
+      {impactMessage && <ImpactFlash frame={frame - impactMessage.appearAtFrame} />}
     </AbsoluteFill>
   );
+};
+
+// A one-frame white flash sells the punch-in as a "cut," the same
+// technique TwistPhase uses in ListStory.tsx — reused here rather than
+// reinvented.
+const ImpactFlash: React.FC<{ frame: number }> = ({ frame }) => {
+  const opacity = interpolate(frame, [0, 1, 2], [0, 0.5, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  return <AbsoluteFill style={{ backgroundColor: "#FFFFFF", opacity, pointerEvents: "none" }} />;
 };
 
 // Sits in the blank space above the conversation (bubbles anchor to the
@@ -375,21 +401,26 @@ const ChatHeader: React.FC<{ contactName: string; headerCaption: string }> = ({
 // Quick pop-in (not a slow fade) so the rhythm stays fast even though each
 // bubble, once visible, stays put — the flex column + overflow:hidden above
 // handles "scrolling" by just clipping older bubbles off the top as new
-// ones are appended at the bottom.
+// ones are appended at the bottom. `impact` swaps the soft pop for a
+// harder punch-in (bigger overshoot) plus a brief decaying shake — reserve
+// it for the beat that's supposed to be the laugh.
 const MessageBubble: React.FC<{
   sender: "me" | "them";
   text: string;
   frame: number;
   appearAtFrame: number;
+  impact?: boolean;
   showDelivered?: boolean;
-}> = ({ sender, text, frame, appearAtFrame, showDelivered }) => {
+}> = ({ sender, text, frame, appearAtFrame, impact, showDelivered }) => {
   const localFrame = frame - appearAtFrame;
-  const scale = interpolate(localFrame, [0, 5], [0.85, 1], {
-    extrapolateRight: "clamp",
-  });
+  const scale = impact
+    ? interpolate(localFrame, [0, 3, 7], [0.5, 1.18, 1], { extrapolateRight: "clamp" })
+    : interpolate(localFrame, [0, 5], [0.85, 1], { extrapolateRight: "clamp" });
   const opacity = interpolate(localFrame, [0, 4], [0, 1], {
     extrapolateRight: "clamp",
   });
+  const shakeDecay = impact ? Math.max(0, 1 - localFrame / 6) : 0;
+  const shakeX = Math.sin(localFrame * 3) * 5 * shakeDecay;
   const isMe = sender === "me";
 
   return (
@@ -398,7 +429,7 @@ const MessageBubble: React.FC<{
         style={{
           maxWidth: "78%",
           opacity,
-          transform: `scale(${scale})`,
+          transform: `scale(${scale}) translateX(${shakeX}px)`,
           transformOrigin: isMe ? "bottom right" : "bottom left",
           backgroundColor: isMe ? "#0A84FF" : "#E9E9EB",
           color: isMe ? "#FFFFFF" : "#000000",
