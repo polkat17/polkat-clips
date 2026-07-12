@@ -14,8 +14,16 @@ import { SAFE_ZONE } from "../../theme";
 // tight under the tagline — it needs to read as its own CTA, not a small
 // afterthought caption, and it has to clear SAFE_ZONE.bottom the same as
 // everything else or it just gets covered by TikTok/Shorts UI chrome.
+//
+// A one-frame white flash right at the start sells the transition into
+// this card as a deliberate hard cut rather than just "the next Sequence
+// started" — otherwise the cut itself doesn't read as a choice.
 export const NativeTagCard: React.FC<{ text: string }> = ({ text }) => {
   const frame = useCurrentFrame();
+  const flashOpacity = interpolate(frame, [0, 1, 2], [0, 0.6, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
   const logoScale = interpolate(frame, [0, 5], [1.3, 1], {
     extrapolateRight: "clamp",
@@ -101,6 +109,8 @@ export const NativeTagCard: React.FC<{ text: string }> = ({ text }) => {
           link in bio
         </div>
       </AbsoluteFill>
+
+      <AbsoluteFill style={{ backgroundColor: "#FFFFFF", opacity: flashOpacity, pointerEvents: "none" }} />
     </AbsoluteFill>
   );
 };

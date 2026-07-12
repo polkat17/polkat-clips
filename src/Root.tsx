@@ -36,6 +36,7 @@ import exPartner from "./data/chatStories/exPartner.json";
 import kidsName from "./data/chatStories/kidsName.json";
 import jobHobby from "./data/chatStories/jobHobby.json";
 import startup from "./data/chatStories/startup.json";
+import potluck from "./data/chatStories/potluck.json";
 import {
   ChannelBanner,
   ChannelBannerProps,
@@ -53,6 +54,7 @@ const chatStories: { id: string; data: ChatStoryProps }[] = [
   { id: "kids-name", data: kidsName as ChatStoryProps },
   { id: "job-hobby", data: jobHobby as ChatStoryProps },
   { id: "startup", data: startup as ChatStoryProps },
+  { id: "potluck", data: potluck as ChatStoryProps },
 ];
 
 // scripts.json entries carry an extra `id` field that DemoClipProps doesn't

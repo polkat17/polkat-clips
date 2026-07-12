@@ -87,6 +87,15 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 // the line that matters rather than holding one static shot throughout.
 // A one-frame white flash sells the "cut" the same way TwistPhase does in
 // ListStory.tsx. If every bubble gets it, none of them read as emphasis.
+//
+// The hook gets the loudest treatment in the video on purpose: TikTok's
+// own swipe behavior gives a video under a second to look worth stopping
+// for, so frame 0 needs to already be the most visually striking moment,
+// not ease into one. A flash-bulb frame at video start, an ALL CAPS punch-
+// in (bigger overshoot + a quick shake, not the calm fade the hook used
+// before), and `hookHighlight` — a substring of `hook` rendered as a red
+// sticker-style box instead of plain text — all exist for that one job.
+// Reuses SKIP_RED rather than adding a third accent color.
 
 const TYPING_DURATION_SECONDS = 0.9; // fallback when a message doesn't set typingSeconds
 const HOLD_AFTER_LAST_MESSAGE = 2.2; // a real pause before the hard cut to the reveal
@@ -113,6 +122,7 @@ export type ChatStoryProps = {
   contactName: string;
   headerCaption: string; // bold editorial label shown in the header instead of the plain name
   hook: string; // bold first-frame line — states the curiosity hook up front
+  hookHighlight?: string; // substring of `hook` rendered as a red sticker-style box
   messages: ChatMessage[];
   revealLine: string;
   skipReveal?: boolean; // omit the Recalla card entirely (format-only test posts)
@@ -160,6 +170,7 @@ export const ChatStory: React.FC<ChatStoryProps> = ({
   contactName,
   headerCaption,
   hook,
+  hookHighlight,
   messages,
   revealLine,
   skipReveal,
@@ -177,7 +188,13 @@ export const ChatStory: React.FC<ChatStoryProps> = ({
           the same note in ListStory.tsx for why that beats baking one in. */}
 
       <Sequence durationInFrames={conversationFrames}>
-        <ConversationPhase contactName={contactName} headerCaption={headerCaption} hook={hook} schedule={schedule} />
+        <ConversationPhase
+          contactName={contactName}
+          headerCaption={headerCaption}
+          hook={hook}
+          hookHighlight={hookHighlight}
+          schedule={schedule}
+        />
       </Sequence>
 
       {!skipReveal && (
@@ -193,8 +210,9 @@ const ConversationPhase: React.FC<{
   contactName: string;
   headerCaption: string;
   hook: string;
+  hookHighlight?: string;
   schedule: ScheduledMessage[];
-}> = ({ contactName, headerCaption, hook, schedule }) => {
+}> = ({ contactName, headerCaption, hook, hookHighlight, schedule }) => {
   const frame = useCurrentFrame();
 
   const nextHidden = schedule.find((m) => m.appearAtFrame > frame);
@@ -255,9 +273,10 @@ const ConversationPhase: React.FC<{
         })}
       </AbsoluteFill>
 
-      <HookBanner text={hook} frame={frame} />
+      <HookBanner text={hook} highlight={hookHighlight} frame={frame} />
 
       {impactMessage && <ImpactFlash frame={frame - impactMessage.appearAtFrame} />}
+      {frame < 3 && <ImpactFlash frame={frame} />}
     </AbsoluteFill>
   );
 };
@@ -275,11 +294,18 @@ const ImpactFlash: React.FC<{ frame: number }> = ({ frame }) => {
 
 // Sits in the blank space above the conversation (bubbles anchor to the
 // bottom and grow upward, so this area is empty for the first couple of
-// seconds anyway) as plain bold text — no box, no background — so it reads
-// as part of the chat rather than an ad slide stuck on top of it. Full
-// opacity from frame 0 (that's often the thumbnail frame) and gone well
-// before the first misunderstanding lands.
-const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) => {
+// seconds anyway) — no box, no background, so it still reads as part of
+// the chat rather than an ad slide stuck on top of it, but the text and
+// entrance are as loud as the rest of the frame is quiet: ALL CAPS, a hard
+// punch-in with a quick shake (not a calm fade — see file header), and an
+// optional `highlight` substring rendered as a red sticker-style box.
+// Opacity is 1 from frame 0 regardless (that's often the thumbnail frame),
+// only the scale/shake animate in.
+const HookBanner: React.FC<{ text: string; highlight?: string; frame: number }> = ({
+  text,
+  highlight,
+  frame,
+}) => {
   const visibleFrames = Math.round(HOOK_VISIBLE_SECONDS * FPS);
   const fadeStart = visibleFrames - 12;
   const opacity = interpolate(frame, [fadeStart, visibleFrames], [1, 0], {
@@ -288,6 +314,15 @@ const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) 
   });
 
   if (opacity <= 0) return null;
+
+  const scale = interpolate(frame, [0, 3, 6], [1.3, 0.95, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const shakeDecay = Math.max(0, 1 - frame / 6);
+  const shakeX = Math.sin(frame * 3) * 6 * shakeDecay;
+
+  const parts = highlight ? text.split(highlight) : [text];
 
   return (
     <AbsoluteFill
@@ -301,19 +336,45 @@ const HookBanner: React.FC<{ text: string; frame: number }> = ({ text, frame }) 
       }}
     >
       <CaptionFontStyle />
-      <div
-        style={{
-          opacity,
-          fontFamily: CAPTION_FONT_FAMILY,
-          fontWeight: 700,
-          fontSize: 38,
-          lineHeight: 1.3,
-          color: "#1A1A1A",
-          textAlign: "center",
-          textShadow: "0 2px 10px rgba(0,0,0,0.12)",
-        }}
-      >
-        {text}
+      <div style={{ position: "relative" }}>
+        <div style={{ position: "absolute", top: -34, right: -34, fontSize: 34, transform: "rotate(12deg)" }}>
+          👀
+        </div>
+        <div
+          style={{
+            opacity,
+            transform: `scale(${scale}) translateX(${shakeX}px)`,
+            fontFamily: CAPTION_FONT_FAMILY,
+            fontWeight: 700,
+            fontSize: 38,
+            lineHeight: 1.3,
+            color: "#1A1A1A",
+            textAlign: "center",
+            textTransform: "uppercase",
+            textShadow: "0 2px 10px rgba(0,0,0,0.12)",
+          }}
+        >
+          {parts.length === 2 ? (
+            <>
+              {parts[0]}
+              <span
+                style={{
+                  backgroundColor: SKIP_RED,
+                  color: "#FFFFFF",
+                  padding: "2px 10px",
+                  borderRadius: 6,
+                  boxDecorationBreak: "clone",
+                  WebkitBoxDecorationBreak: "clone",
+                }}
+              >
+                {highlight}
+              </span>
+              {parts[1]}
+            </>
+          ) : (
+            text
+          )}
+        </div>
       </div>
     </AbsoluteFill>
   );
