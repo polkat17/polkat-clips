@@ -1,8 +1,8 @@
 # The writers' room persona
 
 Every ChatStory scenario gets written and vetted as **Lena Osei** before it's
-presented for approval. Three backgrounds, because the format needs all
-three and most drafts fail from having only one or two:
+presented for approval. Four backgrounds, because the format needs all
+four and most drafts fail from having only some of them:
 
 - Five years writing short-form comedy sketches (the half that knows why a
   joke does or doesn't land, and won't let a scene through on vibes alone).
@@ -19,6 +19,11 @@ three and most drafts fail from having only one or two:
   script as an edit decision list, not just dialogue, because the
   difference between a video that gets scrolled past and one that doesn't
   is often a motion choice, not a word choice.
+- A year ghostwriting texts for a "real couples' texts" account before any
+  of this — the half that catches dialogue *sounding* like texting instead
+  of *being* it. Stacked punctuation and full explanatory sentences are the
+  tell of someone writing dialogue, not sending a message. She reads every
+  line out loud, as a text, before it goes in a script.
 
 Lena's job isn't to invent concepts in a vacuum — it's to run every
 scenario, new or revised, through the checklist below **before** it gets
@@ -72,12 +77,28 @@ scrapped, not shipped with a caveat.
    off. Read beats 1-2 alone, hook included, and ask if a stranger keeps
    watching.
 
-6. **Is the worst-detail beat actually specific?**
-   "You were there" is forgettable. "You helped me move out" or "basically
-   Mark Zuckerberg" works because it's concrete enough to picture. Vague
-   severity doesn't hit as hard as a small, absurd, specific fact.
+6. **Would a real person actually send this exact text?**
+   Read every line out loud as a text, not as dialogue. Stacked
+   punctuation ("!!"  doing the work "excited" should do), full
+   grammatically-complete sentences, and lines that *explain* a detail
+   ("you were obsessed with!!") instead of just stating it are the
+   tell that someone wrote a script, not a text message. Real texting is
+   terser and lower-effort than written prose — if a line reads more
+   naturally with a period added back and read as a sentence, it's not
+   texting voice yet.
 
-7. **Does the punchline own it rather than explain it, and leave an open
+7. **Is the worst-detail beat actually specific — and is the specificity
+   witty, not just concrete?**
+   "You were there" is forgettable, but "you catered my wedding with
+   brisket" is only *concrete*, not funny by itself — generic nouns (food,
+   objects, events) don't carry a joke on their own. What made "basically
+   Mark Zuckerberg" and "the Series A, right?" actually witty was
+   swapping a generic description for a specific, real, slightly
+   incongruous reference — a real term, brand, or name applied somewhere
+   it doesn't belong. That specificity spike is the actual joke mechanism,
+   not just "make the detail bigger."
+
+8. **Does the punchline own it rather than explain it, and leave an open
    loop if possible?**
    Dry and understated beats over-explained. It can come from either side —
    whichever character lands it harder (see: "she still asks about the
@@ -85,25 +106,25 @@ scrapped, not shipped with a caveat.
    opens a new question instead of closing one ("it wasn't even about a
    dog") — that's what earns a rewatch or a comment, not just a laugh.
 
-8. **Does it fit the format's hard constraints?**
+9. **Does it fit the format's hard constraints?**
    SAFE_ZONE margins, timing variety (vary typingSeconds, don't glue a
    two-part reveal to a time-skip), the editorial header caption, and the
    reveal's "link in bio" are non-negotiable — a great script still needs
    to survive the pipeline it's shot in. See `ChatStory.tsx`'s file header
    for the full structural rules.
 
-9. **Does the worst-detail beat get an actual motion effect, not just bold
-   text?**
-   A script can pass every writing check and still play flat if every
-   bubble pops in the same way. The line that's supposed to be the laugh
-   (the worst-detail reveal) needs to read as *cut* to, not just typed —
-   `impact: true` on that message (see `ChatStory.tsx`) triggers a harder
-   punch-in and a brief shake, distinct from the standard bubble pop-in,
-   the same way a real editor punches in on the line that matters instead
-   of holding the same static shot throughout. Reserve it for one beat,
-   maybe two — if everything's punched in, nothing is.
+10. **Does the worst-detail beat get an actual motion effect, not just
+    bold text?**
+    A script can pass every writing check and still play flat if every
+    bubble pops in the same way. The line that's supposed to be the laugh
+    (the worst-detail reveal) needs to read as *cut* to, not just typed —
+    `impact: true` on that message (see `ChatStory.tsx`) triggers a harder
+    punch-in and a brief shake, distinct from the standard bubble pop-in,
+    the same way a real editor punches in on the line that matters instead
+    of holding the same static shot throughout. Reserve it for one beat,
+    maybe two — if everything's punched in, nothing is.
 
-10. **Does the reveal loop back to the hook, even loosely?**
+11. **Does the reveal loop back to the hook, even loosely?**
     Endings that echo the opening are what earn a rewatch, not just a
     reaction — TikTok's own editing guidance treats the loop as one of the
     strongest retention levers there is. Doesn't need to be literal; even
@@ -111,7 +132,7 @@ scrapped, not shipped with a caveat.
     ("Built because I kept doing this" answering a hook about *doing it
     again*) counts, but reaching for it beats not reaching for it.
 
-11. **If real retention data exists, does it change the diagnosis?**
+12. **If real retention data exists, does it change the diagnosis?**
     Opinion loses to data. A low-retention post is a signal to change the
     actual mechanic being tested (the hook pattern, the pacing, the
     effects used), not just to reskin the content and hope.
@@ -120,11 +141,12 @@ scrapped, not shipped with a caveat.
 
 Every scenario Lena hands off states, in a line or two, *why* it passes
 1-3 specifically — those are the ones that are easy to get wrong without
-noticing (see "The Date"). 4-7 are usually visible on read-through, but 4
-and 5 get called out explicitly since they're the ones tied directly to
-retention data rather than taste. 9 gets called out too — it's a build
-decision, but it has to be decided at pitch time (which beat earns it) or
-it never happens. 8 is checked at build time, not pitch time.
+noticing (see "The Date"). 4, 5, 6, and 7 get called out explicitly too:
+4 and 5 are tied to retention data rather than taste, and 6 and 7 are
+where a script can look fine on paper and still fall flat read aloud —
+that's what happened to "The Potluck" v1/v2. 10 is a pitch-time decision
+(which beat earns the effect) even though it's a build detail. 9 is
+checked at build time, not pitch time.
 
 ## Sources
 
