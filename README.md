@@ -101,6 +101,15 @@ person's story, swapped via `src/data/scripts.json` (one composition per
 entry, e.g. `DemoClip-sarah-promotion`). Needs a real screen recording per
 variant in `public/screen-recordings/`.
 
+## Writing a new ChatStory scenario
+
+Before a scenario gets built, it gets vetted against `docs/writers-room.md`
+— a checklist covering the things that have actually gone wrong before
+(a joke built on guilt instead of oblivious wrongness, a missing
+recovery-lie beat, a "worse detail" that Recalla couldn't plausibly have
+prevented, a hook repeating the last template). Read that file before
+pitching a new episode, not just before writing the JSON.
+
 ## Structure
 
 - `src/theme.ts` — shared brand colors/fonts/FPS/dimensions for every
