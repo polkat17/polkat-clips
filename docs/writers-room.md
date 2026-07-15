@@ -40,13 +40,38 @@ scrapped, not shipped with a caveat.
    it reads as drama, not comedy. ("The Date" failed this: the "worse
    detail" was something *I did*, not something *I was wrong about*.)
 
-2. **Is there an actual recovery-lie beat?**
+2. **Does the escalation actually use a joke-construction technique, or is
+   it just a straight line getting bigger?**
+   "The Toast" and "The Knee Brace" both passed every other check and
+   still played flat — the missing ingredient was structure, not content.
+   A single wrong-guess-then-correction is a premise, not a joke yet. Lean
+   on the actual mechanics professional joke writing uses:
+   - **Rule of three**: two similar beats establish a pattern, the third
+     breaks it. Three guesses at something (not one) sets up an
+     expectation the real answer can then subvert — "Liam? Oliver? wait,
+     Noah?" earns the reveal in a way a single guess doesn't.
+   - **Misdirection**: give the pattern a clean on-ramp (two guesses that
+     really do sound like plausible baby names) so the third beat — the
+     real answer — lands as a genuine swerve, not a foregone conclusion.
+   - **Heightening**: take the emotional truth of the premise (I wasn't
+     paying attention) and push it to its most absurd but still-earned
+     extreme, rather than a mildly-worse version of the same fact. "She
+     named the baby after me and I didn't know she was pregnant" is
+     heightening; "I forgot the baby's name" is just the premise restated.
+   - **Escalation**: each beat should be a bigger complication than the
+     last, not a parallel one — if beat 6 and beat 8 are roughly the same
+     size of "bad," the second one is dead weight.
+   A script can nail the dramatic-irony engine (item 1) and still be flat
+   if it never actually deploys one of these — irony is the fuel, these
+   are the joke shapes it needs to be poured into.
+
+3. **Is there an actual recovery-lie beat?**
    After the correction, "me" needs a line that doubles down — pretends to
    already know the thing. That denial is the second laugh. Skipping
    straight from correction to worse-detail drops a full joke, not just a
    beat.
 
-3. **Does the forgotten detail match what Recalla actually does?**
+4. **Does the forgotten detail match what Recalla actually does?**
    Recalla logs personal details you'd choose to remember about someone —
    relationship status, job, family, a hobby, a life update. It is not a
    social-media notification service. If the "worse detail" is about
@@ -56,7 +81,7 @@ scrapped, not shipped with a caveat.
    specifically? If the honest answer is "not really," rewrite the premise
    until it is.
 
-4. **Is the hook one of the four patterns that actually retain, under ~12
+5. **Is the hook one of the four patterns that actually retain, under ~12
    words?**
    Independent retention testing of opening lines from top creators
    consistently narrows down to four hook types: an **identity call**
@@ -68,7 +93,7 @@ scrapped, not shipped with a caveat.
    words and it's already lost some of the people it needed to hook. Pick
    a different one of the four patterns than the last episode used.
 
-5. **Does the first 3 seconds — hook plus the first bubble — survive on
+6. **Does the first 3 seconds — hook plus the first bubble — survive on
    its own, with nothing else on screen yet?**
    That's the actual window TikTok's algorithm weights hardest. If the
    hook fades and the conversation opener underneath it is filler ("hey
@@ -77,7 +102,7 @@ scrapped, not shipped with a caveat.
    off. Read beats 1-2 alone, hook included, and ask if a stranger keeps
    watching.
 
-6. **Would a real person actually send this exact text?**
+7. **Would a real person actually send this exact text?**
    Read every line out loud as a text, not as dialogue. Stacked
    punctuation ("!!"  doing the work "excited" should do), full
    grammatically-complete sentences, and lines that *explain* a detail
@@ -87,7 +112,7 @@ scrapped, not shipped with a caveat.
    naturally with a period added back and read as a sentence, it's not
    texting voice yet.
 
-7. **Is the worst-detail beat actually specific — and is the specificity
+8. **Is the worst-detail beat actually specific — and is the specificity
    witty, not just concrete?**
    "You were there" is forgettable, but "you catered my wedding with
    brisket" is only *concrete*, not funny by itself — generic nouns (food,
@@ -95,10 +120,10 @@ scrapped, not shipped with a caveat.
    Mark Zuckerberg" and "the Series A, right?" actually witty was
    swapping a generic description for a specific, real, slightly
    incongruous reference — a real term, brand, or name applied somewhere
-   it doesn't belong. That specificity spike is the actual joke mechanism,
-   not just "make the detail bigger."
+   it doesn't belong. That's one route to specificity; item 2's
+   misdirection/heightening are others — either way, generic isn't enough.
 
-8. **Does the punchline own it rather than explain it, and leave an open
+9. **Does the punchline own it rather than explain it, and leave an open
    loop if possible?**
    Dry and understated beats over-explained. It can come from either side —
    whichever character lands it harder (see: "she still asks about the
@@ -106,14 +131,14 @@ scrapped, not shipped with a caveat.
    opens a new question instead of closing one ("it wasn't even about a
    dog") — that's what earns a rewatch or a comment, not just a laugh.
 
-9. **Does it fit the format's hard constraints?**
-   SAFE_ZONE margins, timing variety (vary typingSeconds, don't glue a
-   two-part reveal to a time-skip), the editorial header caption, and the
-   reveal's "link in bio" are non-negotiable — a great script still needs
-   to survive the pipeline it's shot in. See `ChatStory.tsx`'s file header
-   for the full structural rules.
+10. **Does it fit the format's hard constraints?**
+    SAFE_ZONE margins, timing variety (vary typingSeconds, don't glue a
+    two-part reveal to a time-skip), the editorial header caption, and the
+    reveal's "link in bio" are non-negotiable — a great script still needs
+    to survive the pipeline it's shot in. See `ChatStory.tsx`'s file header
+    for the full structural rules.
 
-10. **Does the worst-detail beat get an actual motion effect, not just
+11. **Does the worst-detail beat get an actual motion effect, not just
     bold text?**
     A script can pass every writing check and still play flat if every
     bubble pops in the same way. The line that's supposed to be the laugh
@@ -124,15 +149,18 @@ scrapped, not shipped with a caveat.
     of holding the same static shot throughout. Reserve it for one beat,
     maybe two — if everything's punched in, nothing is.
 
-11. **Does the reveal loop back to the hook, even loosely?**
+12. **Does the reveal loop back to the hook, even loosely?**
     Endings that echo the opening are what earn a rewatch, not just a
     reaction — TikTok's own editing guidance treats the loop as one of the
     strongest retention levers there is. Doesn't need to be literal; even
     the reveal's tagline calling back to the hook's specific wording
     ("Built because I kept doing this" answering a hook about *doing it
-    again*) counts, but reaching for it beats not reaching for it.
+    again*) counts, but reaching for it beats not reaching for it. Best
+    case, per item 2's misdirection principle, the hook states the
+    ending's punchline as an unexplained mystery and the video's whole job
+    is answering it.
 
-12. **If real retention data exists, does it change the diagnosis?**
+13. **If real retention data exists, does it change the diagnosis?**
     Opinion loses to data. A low-retention post is a signal to change the
     actual mechanic being tested (the hook pattern, the pacing, the
     effects used), not just to reskin the content and hope.
@@ -140,21 +168,27 @@ scrapped, not shipped with a caveat.
 ## How Lena presents a scenario
 
 Every scenario Lena hands off states, in a line or two, *why* it passes
-1-3 specifically — those are the ones that are easy to get wrong without
-noticing (see "The Date"). 4, 5, 6, and 7 get called out explicitly too:
-4 and 5 are tied to retention data rather than taste, and 6 and 7 are
-where a script can look fine on paper and still fall flat read aloud —
-that's what happened to "The Potluck" v1/v2. 10 is a pitch-time decision
-(which beat earns the effect) even though it's a build detail. 9 is
-checked at build time, not pitch time.
+1-4 specifically — those are the ones that are easy to get wrong without
+noticing (see "The Date" for item 1, "The Toast"/"The Knee Brace" for
+item 2). 5, 6, 7, and 8 get called out explicitly too: 5 and 6 are tied
+to retention data rather than taste, and 7 and 8 are where a script can
+look fine on paper and still fall flat read aloud — that's what happened
+to "The Potluck" v1/v2. 11 is a pitch-time decision (which beat earns the
+effect) even though it's a build detail. 10 is checked at build time, not
+pitch time.
 
 ## Sources
 
 Hook-pattern, 3-second retention-weighting, and editing-technique claims
-are from July 2026 industry retention testing and editing guides, not
-house opinion — worth re-checking periodically since platform algorithms
-and editing trends shift:
+are from July 2026 industry retention testing and editing guides; joke-
+construction technique claims (item 2) are from standup/sketch joke-
+writing craft resources, not house opinion — worth re-checking
+periodically since platform algorithms and editing trends shift, though
+the joke-construction craft is much older and more stable than the
+platform-specific claims:
 - [64+ Viral TikTok Hooks That Actually Work in 2026](https://www.socialync.io/viral-hooks-library)
 - [Top 14 TikTok Hooks for 84.3% More Engagement (2026)](https://sendshort.ai/guides/tiktok-hooks/)
 - [50+ TikTok Video Editing Tips (2026)](https://www.opus.pro/research/video-editing-guide-tiktok)
 - [TikTok Editing for Beginners 2026](https://edicionvideopro.com/en/editing-for-platforms-video-marketing/tiktok-editing-beginners-complete-guide/)
+- [How to Write Better Jokes Using the Humor Blueprint](https://funnymuscle.com/write-better-jokes-without-ruining-the-setup/)
+- [Comedy Writing Secrets: Triple the Funny — Writer's Digest](https://www.writersdigest.com/there-are-no-rules/comedy-writing-secrets-triples)
