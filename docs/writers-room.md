@@ -61,6 +61,13 @@ scrapped, not shipped with a caveat.
    - **Escalation**: each beat should be a bigger complication than the
      last, not a parallel one — if beat 6 and beat 8 are roughly the same
      size of "bad," the second one is dead weight.
+   - **Bathos** (the technique actually running under most real viral
+     "relatable" tweets, not just theory): compare something significant
+     to something absurdly mundane, or the reverse — a newborn "already
+     has more group chats than you" lands harder than a straight severity
+     escalation because it's an unhinged, specific, non-obvious comparison,
+     not just "this is worse." The best closing lines read like a thought
+     nobody could have predicted, not the next logical step.
    A script can nail the dramatic-irony engine (item 1) and still be flat
    if it never actually deploys one of these — irony is the fuel, these
    are the joke shapes it needs to be poured into.
@@ -121,7 +128,11 @@ scrapped, not shipped with a caveat.
    swapping a generic description for a specific, real, slightly
    incongruous reference — a real term, brand, or name applied somewhere
    it doesn't belong. That's one route to specificity; item 2's
-   misdirection/heightening are others — either way, generic isn't enough.
+   misdirection/heightening/bathos are others — either way, generic isn't
+   enough. This applies to nouns throughout the script, not just the
+   worst-detail line: "wedding photographers," not "business owners" —
+   niche and textured reads as written by someone with a real, specific
+   world in mind, generic reads as a placeholder.
 
 9. **Does the punchline own it rather than explain it, and leave an open
    loop if possible?**
@@ -180,11 +191,16 @@ pitch time.
 ## Sources
 
 Hook-pattern, 3-second retention-weighting, and editing-technique claims
-are from July 2026 industry retention testing and editing guides; joke-
-construction technique claims (item 2) are from standup/sketch joke-
-writing craft resources, not house opinion — worth re-checking
-periodically since platform algorithms and editing trends shift, though
-the joke-construction craft is much older and more stable than the
+are from July 2026 industry retention testing and editing guides;
+rule-of-three/misdirection/heightening claims (item 2) are from
+standup/sketch joke-writing craft resources; the bathos technique and
+niche-vs-generic-noun finding came from checking actual currently-viral
+tweets and TikTok script guidance directly, not just craft theory — a
+theoretical checklist alone produced two scripts ("The Toast," "The
+Knee Brace") that passed every check and still weren't funny. None of
+this is house opinion, and it's worth re-checking periodically since
+platform algorithms and editing trends shift, though the joke-
+construction craft is much older and more stable than the
 platform-specific claims:
 - [64+ Viral TikTok Hooks That Actually Work in 2026](https://www.socialync.io/viral-hooks-library)
 - [Top 14 TikTok Hooks for 84.3% More Engagement (2026)](https://sendshort.ai/guides/tiktok-hooks/)
@@ -192,3 +208,6 @@ platform-specific claims:
 - [TikTok Editing for Beginners 2026](https://edicionvideopro.com/en/editing-for-platforms-video-marketing/tiktok-editing-beginners-complete-guide/)
 - [How to Write Better Jokes Using the Humor Blueprint](https://funnymuscle.com/write-better-jokes-without-ruining-the-setup/)
 - [Comedy Writing Secrets: Triple the Funny — Writer's Digest](https://www.writersdigest.com/there-are-no-rules/comedy-writing-secrets-triples)
+- [The 50 Funniest Tweets Of All Time, Ranked](https://pleated-jeans.com/2026/07/12/the-50-funniest-tweets-of-all-time-ranked/)
+- [30+ of the Freshest and Funniest Tweets of the Week (July 11, 2026)](https://cheezburger.com/46041605/30-of-the-freshest-and-funniest-tweets-of-the-week-july-11-2026)
+- [How to Write a TikTok Script That Goes Viral (2026 Guide)](https://www.retiplex.com/blog/how-to-write-tiktok-scripts)
