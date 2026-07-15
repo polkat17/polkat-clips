@@ -18,12 +18,30 @@ import { SAFE_ZONE } from "../../theme";
 // A one-frame white flash right at the start sells the transition into
 // this card as a deliberate hard cut rather than just "the next Sequence
 // started" — otherwise the cut itself doesn't read as a choice.
-export const NativeTagCard: React.FC<{ text: string }> = ({ text }) => {
+//
+// A matching brief flash right at the *end* (only if durationInFrames is
+// known) makes a replay loop feel intentional: 85%+ retention specifically
+// indicates replay behavior, and this card cutting straight from black to
+// the hook's white background on loop is a harder seam than it needs to
+// be. Same magnitude as the start flash — brief enough not to undercut the
+// reveal's legibility on a normal single watch-through.
+export const NativeTagCard: React.FC<{ text: string; durationInFrames?: number }> = ({
+  text,
+  durationInFrames,
+}) => {
   const frame = useCurrentFrame();
   const flashOpacity = interpolate(frame, [0, 1, 2], [0, 0.6, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
+  const endFlashOpacity = durationInFrames
+    ? interpolate(
+        frame,
+        [durationInFrames - 3, durationInFrames - 2, durationInFrames - 1],
+        [0, 0.6, 0],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+      )
+    : 0;
 
   const logoScale = interpolate(frame, [0, 5], [1.3, 1], {
     extrapolateRight: "clamp",
@@ -111,6 +129,7 @@ export const NativeTagCard: React.FC<{ text: string }> = ({ text }) => {
       </AbsoluteFill>
 
       <AbsoluteFill style={{ backgroundColor: "#FFFFFF", opacity: flashOpacity, pointerEvents: "none" }} />
+      <AbsoluteFill style={{ backgroundColor: "#FFFFFF", opacity: endFlashOpacity, pointerEvents: "none" }} />
     </AbsoluteFill>
   );
 };

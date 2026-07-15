@@ -57,7 +57,7 @@ export const BaxterClip: React.FC<BaxterClipProps> = ({
       </Sequence>
 
       <Sequence from={clipFrames} durationInFrames={tagFrames}>
-        <NativeTagCard text={tagLine} />
+        <NativeTagCard text={tagLine} durationInFrames={tagFrames} />
       </Sequence>
     </AbsoluteFill>
   );

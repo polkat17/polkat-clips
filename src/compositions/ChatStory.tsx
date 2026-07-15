@@ -210,7 +210,7 @@ export const ChatStory: React.FC<ChatStoryProps> = ({
 
       {!skipReveal && (
         <Sequence from={conversationFrames} durationInFrames={tagFrames}>
-          <NativeTagCard text={revealLine} />
+          <NativeTagCard text={revealLine} durationInFrames={tagFrames} />
         </Sequence>
       )}
     </AbsoluteFill>
@@ -274,6 +274,7 @@ const ConversationPhase: React.FC<{
                   text={message.text}
                   frame={frame}
                   appearAtFrame={message.appearAtFrame}
+                  seed={i}
                   impact={message.impact}
                   showDelivered={message === lastMessage && showDelivered}
                 />
@@ -501,13 +502,25 @@ const MessageBubble: React.FC<{
   text: string;
   frame: number;
   appearAtFrame: number;
+  seed?: number;
   impact?: boolean;
   showDelivered?: boolean;
-}> = ({ sender, text, frame, appearAtFrame, impact, showDelivered }) => {
+}> = ({ sender, text, frame, appearAtFrame, seed = 0, impact, showDelivered }) => {
   const localFrame = frame - appearAtFrame;
+  // Deterministic per-bubble variation (not Math.random — Remotion re-renders
+  // any frame independently, so randomness has to be a pure function of
+  // something stable like the bubble's index) on the pop-in curve. The same
+  // animation on every single bubble is what makes a stretch of ordinary
+  // setup lines start to feel metronomic instead of alive — real retention
+  // data favors *some* fresh visual beat every few seconds, and identical
+  // repeated motion stops reading as a fresh beat even though a new bubble
+  // is technically appearing each time.
+  const jitter = Math.abs(Math.sin(seed * 12.9898) * 43758.5453) % 1;
+  const popDuration = 4 + Math.round(jitter * 2); // 4-6 frames
+  const overshoot = 0.82 + jitter * 0.05; // 0.82-0.87
   const scale = impact
     ? interpolate(localFrame, [0, 3, 7], [0.5, 1.18, 1], { extrapolateRight: "clamp" })
-    : interpolate(localFrame, [0, 5], [0.85, 1], { extrapolateRight: "clamp" });
+    : interpolate(localFrame, [0, popDuration], [overshoot, 1], { extrapolateRight: "clamp" });
   const opacity = interpolate(localFrame, [0, 4], [0, 1], {
     extrapolateRight: "clamp",
   });
