@@ -96,6 +96,17 @@ import { NativeTagCard } from "./shared/NativeTagCard";
 // before), and `hookHighlight` — a substring of `hook` rendered as a red
 // sticker-style box instead of plain text — all exist for that one job.
 // Reuses SKIP_RED rather than adding a third accent color.
+//
+// Every "added in post" overlay is deliberately rough, not CapCut-default
+// clean — real top-performing edits use uneven hand-cut borders, tilted
+// slapped-on placement, and hand-drawn circles/scribbles around the thing
+// that matters, not smooth rounded boxes and centered fades. A perfectly
+// symmetrical box reads as a template; an irregular border-radius, an
+// uneven-width border, and a real rotation read as a person made this in
+// their editor thirty seconds ago. `RoughCircle` (hand-drawn wobble, not a
+// clean ellipse) around the impact bubble is the same instinct applied to
+// "circle the evidence" — one of the most recognizable creator-overlay
+// tropes there is.
 
 const TYPING_DURATION_SECONDS = 0.9; // fallback when a message doesn't set typingSeconds
 const HOLD_AFTER_LAST_MESSAGE = 2.2; // a real pause before the hard cut to the reveal
@@ -337,7 +348,7 @@ const HookBanner: React.FC<{ text: string; highlight?: string; frame: number }> 
     >
       <CaptionFontStyle />
       <div style={{ position: "relative" }}>
-        <div style={{ position: "absolute", top: -34, right: -34, fontSize: 34, transform: "rotate(12deg)" }}>
+        <div style={{ position: "absolute", top: -38, right: -30, fontSize: 36, transform: "rotate(19deg)" }}>
           👀
         </div>
         <div
@@ -361,8 +372,11 @@ const HookBanner: React.FC<{ text: string; highlight?: string; frame: number }> 
                 style={{
                   backgroundColor: SKIP_RED,
                   color: "#FFFFFF",
-                  padding: "2px 10px",
-                  borderRadius: 6,
+                  padding: "3px 12px",
+                  border: "3px solid #000",
+                  borderRadius: "255px 15px 225px 15px / 15px 225px 15px 255px",
+                  boxShadow: "0 0 0 3px #FFFFFF",
+                  transform: "rotate(-3deg)",
                   boxDecorationBreak: "clone",
                   WebkitBoxDecorationBreak: "clone",
                 }}
@@ -383,7 +397,9 @@ const HookBanner: React.FC<{ text: string; highlight?: string; frame: number }> 
 // A jump-cut caption, inline in the message flow (not floating over the
 // bubbles — that made it hard to read against the text underneath).
 // Deliberately not trying to look like native UI, the way a creator would
-// mark a time skip in their own edit: red, hard black stroke, slight tilt.
+// mark a time skip in their own edit: red, a white halo behind the black
+// stroke (the "sticker cut out and slapped on" look, not a clean type
+// treatment), and a real tilt rather than a token 2 degrees.
 const SkipCaption: React.FC<{ text: string; frame: number }> = ({ text, frame }) => {
   const scale = interpolate(frame, [0, 4], [1.15, 1], { extrapolateRight: "clamp" });
   const opacity = interpolate(frame, [0, 3], [0, 1], { extrapolateRight: "clamp" });
@@ -393,7 +409,7 @@ const SkipCaption: React.FC<{ text: string; frame: number }> = ({ text, frame })
       style={{
         alignSelf: "center",
         opacity,
-        transform: `scale(${scale}) rotate(-2deg)`,
+        transform: `scale(${scale}) rotate(-5deg)`,
         fontFamily: CAPTION_FONT_FAMILY,
         fontWeight: 900,
         fontSize: 26,
@@ -401,6 +417,7 @@ const SkipCaption: React.FC<{ text: string; frame: number }> = ({ text, frame })
         textAlign: "center",
         textTransform: "uppercase",
         WebkitTextStroke: "1.5px black",
+        textShadow: "0 0 5px #FFF, 0 0 5px #FFF, 0 0 8px #FFF",
         margin: "6px 0",
       }}
     >
@@ -442,19 +459,33 @@ const ChatHeader: React.FC<{ contactName: string; headerCaption: string }> = ({
     >
       {contactName.charAt(0).toUpperCase()}
     </div>
-    <div
-      style={{
-        fontFamily: CAPTION_FONT_FAMILY,
-        fontWeight: 700,
-        fontSize: 22,
-        letterSpacing: 0.5,
-        color: "#1A1A1A",
-        textTransform: "uppercase",
-        textAlign: "center",
-        padding: "0 24px",
-      }}
-    >
-      {headerCaption}
+    <div style={{ position: "relative", transform: "rotate(-1.5deg)", padding: "0 24px" }}>
+      <div
+        style={{
+          fontFamily: CAPTION_FONT_FAMILY,
+          fontWeight: 700,
+          fontSize: 22,
+          letterSpacing: 0.5,
+          color: "#1A1A1A",
+          textTransform: "uppercase",
+          textAlign: "center",
+        }}
+      >
+        {headerCaption}
+      </div>
+      <svg
+        viewBox="0 0 200 10"
+        preserveAspectRatio="none"
+        style={{ position: "absolute", bottom: -6, left: 0, width: "100%", height: 8 }}
+      >
+        <path
+          d="M2,5 Q30,1 55,6 T110,4 T160,6 T198,3"
+          stroke={SKIP_RED}
+          strokeWidth="3"
+          fill="none"
+          strokeLinecap="round"
+        />
+      </svg>
     </div>
   </AbsoluteFill>
 );
@@ -486,23 +517,26 @@ const MessageBubble: React.FC<{
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: isMe ? "flex-end" : "flex-start" }}>
-      <div
-        style={{
-          maxWidth: "78%",
-          opacity,
-          transform: `scale(${scale}) translateX(${shakeX}px)`,
-          transformOrigin: isMe ? "bottom right" : "bottom left",
-          backgroundColor: isMe ? "#0A84FF" : "#E9E9EB",
-          color: isMe ? "#FFFFFF" : "#000000",
-          borderRadius: 30,
-          padding: "16px 24px",
-          fontFamily: MESSAGE_FONT_FAMILY,
-          fontWeight: 400,
-          fontSize: 32,
-          lineHeight: 1.3,
-        }}
-      >
-        {text}
+      <div style={{ position: "relative" }}>
+        <div
+          style={{
+            maxWidth: "78%",
+            opacity,
+            transform: `scale(${scale}) translateX(${shakeX}px)`,
+            transformOrigin: isMe ? "bottom right" : "bottom left",
+            backgroundColor: isMe ? "#0A84FF" : "#E9E9EB",
+            color: isMe ? "#FFFFFF" : "#000000",
+            borderRadius: 30,
+            padding: "16px 24px",
+            fontFamily: MESSAGE_FONT_FAMILY,
+            fontWeight: 400,
+            fontSize: 32,
+            lineHeight: 1.3,
+          }}
+        >
+          {text}
+        </div>
+        {impact && <RoughCircle frame={localFrame} />}
       </div>
       {showDelivered && (
         <div
@@ -519,6 +553,48 @@ const MessageBubble: React.FC<{
         </div>
       )}
     </div>
+  );
+};
+
+// A hand-drawn wobble, not a clean ellipse — "circling the evidence" is
+// one of the most recognizable creator-overlay tropes there is, and it
+// only reads as authentic if it looks drawn, not generated. Strokes on in
+// (dasharray/dashoffset) just after the bubble's own punch-in settles, so
+// it reads as a deliberate follow-up gesture, not part of the same pop.
+const RoughCircle: React.FC<{ frame: number }> = ({ frame }) => {
+  const opacity = interpolate(frame, [4, 7], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const dashOffset = interpolate(frame, [4, 16], [700, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <svg
+      viewBox="0 0 200 100"
+      preserveAspectRatio="none"
+      style={{
+        position: "absolute",
+        top: "-20%",
+        left: "-10%",
+        width: "120%",
+        height: "140%",
+        opacity,
+        pointerEvents: "none",
+      }}
+    >
+      <path
+        d="M16,54 C9,20 54,3 101,5 C156,7 193,21 187,53 C183,85 144,98 96,95 C46,93 19,82 16,54 Z"
+        fill="none"
+        stroke={SKIP_RED}
+        strokeWidth="5"
+        strokeLinecap="round"
+        strokeDasharray="700"
+        strokeDashoffset={dashOffset}
+      />
+    </svg>
   );
 };
 
