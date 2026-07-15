@@ -1,0 +1,19 @@
+{
+  "contactName": "Simone",
+  "headerCaption": "THE TWIN I DIDN'T DATE",
+  "hook": "I dated one twin and now can't tell them apart over text.",
+  "hookHighlight": "can't tell them apart",
+  "messages": [
+    { "sender": "them", "text": "so are you coming to my show friday?", "delay": 1.3 },
+    { "sender": "me", "text": "omg yes!! can't wait to hear you play violin again", "delay": 1.4, "typing": true, "typingSeconds": 0.8 },
+    { "sender": "them", "text": "...I don't play violin", "delay": 1.3 },
+    { "sender": "them", "text": "that's my sister.", "delay": 0.5 },
+    { "sender": "them", "text": "I do stand-up.", "delay": 0.6 },
+    { "sender": "me", "text": "right, I know that", "delay": 1.2, "typing": true, "typingSeconds": 0.6 },
+    { "sender": "them", "text": "you dated her. one summer.", "delay": 1.4, "typing": true, "typingSeconds": 0.9 },
+    { "sender": "them", "text": "not me.", "delay": 0.3, "impact": true },
+    { "sender": "me", "text": "🙃", "delay": 0.9 },
+    { "sender": "them", "text": "she still has your hoodie", "delay": 1.5, "typing": true, "typingSeconds": 0.8 }
+  ],
+  "revealLine": "Built because I kept doing this."
+}
