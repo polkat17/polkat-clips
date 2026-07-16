@@ -99,6 +99,14 @@ scrapped, not shipped with a caveat.
    should be something that happened recently enough (weeks to under a
    year, not years to decades) that an otherwise-attentive friend could
    plausibly have missed it — not evidence they were never really there.
+   This is a check on *timescale*, not stakes — don't overcorrect a
+   rejected stretch into a low-stakes premise. "The Engagement" was
+   plausible and clean and still got rejected as not funny enough: it
+   fixed the scale problem but the reveal itself was mild (a missed
+   announcement) instead of genuinely embarrassing. The episodes that
+   actually worked (startup, "The Potluck," "The Wrong Twin") all had real
+   stakes riding on the reveal, not just a detail that was missed —
+   plausible and high-stakes aren't in tension, a premise needs both.
 
 6. **Is the hook one of the four patterns that actually retain, under ~12
    words?**
