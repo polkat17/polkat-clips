@@ -88,7 +88,19 @@ scrapped, not shipped with a caveat.
    specifically? If the honest answer is "not really," rewrite the premise
    until it is.
 
-5. **Is the hook one of the four patterns that actually retain, under ~12
+5. **Is the mistake believable at human scale?**
+   Two different ways a premise stops being "relatable" and becomes
+   "absurd": it needs a logical stretch to even make sense (an implied
+   off-screen event never shown, a third character introduced with no
+   setup — see "The Birthday"), or the elapsed time is long enough that it
+   stops implying "I wasn't paying close attention" and starts implying
+   total absence from the person's life (17 years of not registering a
+   godson aging — see "The Baby I Still Picture"). The forgotten detail
+   should be something that happened recently enough (weeks to under a
+   year, not years to decades) that an otherwise-attentive friend could
+   plausibly have missed it — not evidence they were never really there.
+
+6. **Is the hook one of the four patterns that actually retain, under ~12
    words?**
    Independent retention testing of opening lines from top creators
    consistently narrows down to four hook types: an **identity call**
@@ -100,7 +112,7 @@ scrapped, not shipped with a caveat.
    words and it's already lost some of the people it needed to hook. Pick
    a different one of the four patterns than the last episode used.
 
-6. **Does the first 3 seconds — hook plus the first bubble — survive on
+7. **Does the first 3 seconds — hook plus the first bubble — survive on
    its own, with nothing else on screen yet?**
    That's the actual window TikTok's algorithm weights hardest. If the
    hook fades and the conversation opener underneath it is filler ("hey
@@ -109,7 +121,7 @@ scrapped, not shipped with a caveat.
    off. Read beats 1-2 alone, hook included, and ask if a stranger keeps
    watching.
 
-7. **Would a real person actually send this exact text?**
+8. **Would a real person actually send this exact text?**
    Read every line out loud as a text, not as dialogue. Stacked
    punctuation ("!!"  doing the work "excited" should do), full
    grammatically-complete sentences, and lines that *explain* a detail
@@ -119,7 +131,7 @@ scrapped, not shipped with a caveat.
    naturally with a period added back and read as a sentence, it's not
    texting voice yet.
 
-8. **Is the worst-detail beat actually specific — and is the specificity
+9. **Is the worst-detail beat actually specific — and is the specificity
    witty, not just concrete?**
    "You were there" is forgettable, but "you catered my wedding with
    brisket" is only *concrete*, not funny by itself — generic nouns (food,
@@ -134,22 +146,22 @@ scrapped, not shipped with a caveat.
    niche and textured reads as written by someone with a real, specific
    world in mind, generic reads as a placeholder.
 
-9. **Does the punchline own it rather than explain it, and leave an open
-   loop if possible?**
-   Dry and understated beats over-explained. It can come from either side —
-   whichever character lands it harder (see: "she still asks about the
-   IPO" landing better from Ella than from "me"). Best case, the last line
-   opens a new question instead of closing one ("it wasn't even about a
-   dog") — that's what earns a rewatch or a comment, not just a laugh.
+10. **Does the punchline own it rather than explain it, and leave an open
+    loop if possible?**
+    Dry and understated beats over-explained. It can come from either side —
+    whichever character lands it harder (see: "she still asks about the
+    IPO" landing better from Ella than from "me"). Best case, the last line
+    opens a new question instead of closing one ("it wasn't even about a
+    dog") — that's what earns a rewatch or a comment, not just a laugh.
 
-10. **Does it fit the format's hard constraints?**
+11. **Does it fit the format's hard constraints?**
     SAFE_ZONE margins, timing variety (vary typingSeconds, don't glue a
     two-part reveal to a time-skip), the editorial header caption, and the
     reveal's "link in bio" are non-negotiable — a great script still needs
     to survive the pipeline it's shot in. See `ChatStory.tsx`'s file header
     for the full structural rules.
 
-11. **Does the worst-detail beat get an actual motion effect, not just
+12. **Does the worst-detail beat get an actual motion effect, not just
     bold text?**
     A script can pass every writing check and still play flat if every
     bubble pops in the same way. The line that's supposed to be the laugh
@@ -160,7 +172,7 @@ scrapped, not shipped with a caveat.
     of holding the same static shot throughout. Reserve it for one beat,
     maybe two — if everything's punched in, nothing is.
 
-12. **Does the reveal loop back to the hook, even loosely?**
+13. **Does the reveal loop back to the hook, even loosely?**
     Endings that echo the opening are what earn a rewatch, not just a
     reaction — TikTok's own editing guidance treats the loop as one of the
     strongest retention levers there is. Doesn't need to be literal; even
@@ -171,7 +183,7 @@ scrapped, not shipped with a caveat.
     ending's punchline as an unexplained mystery and the video's whole job
     is answering it.
 
-13. **If real retention data exists, does it change the diagnosis?**
+14. **If real retention data exists, does it change the diagnosis?**
     Opinion loses to data. A low-retention post is a signal to change the
     actual mechanic being tested (the hook pattern, the pacing, the
     effects used), not just to reskin the content and hope.
@@ -179,14 +191,14 @@ scrapped, not shipped with a caveat.
 ## How Lena presents a scenario
 
 Every scenario Lena hands off states, in a line or two, *why* it passes
-1-4 specifically — those are the ones that are easy to get wrong without
+1-5 specifically — those are the ones that are easy to get wrong without
 noticing (see "The Date" for item 1, "The Toast"/"The Knee Brace" for
-item 2). 5, 6, 7, and 8 get called out explicitly too: 5 and 6 are tied
-to retention data rather than taste, and 7 and 8 are where a script can
-look fine on paper and still fall flat read aloud — that's what happened
-to "The Potluck" v1/v2. 11 is a pitch-time decision (which beat earns the
-effect) even though it's a build detail. 10 is checked at build time, not
-pitch time.
+item 2, "The Birthday"/"The Baby I Still Picture" for item 5). 6, 7, 8,
+and 9 get called out explicitly too: 6 and 7 are tied to retention data
+rather than taste, and 8 and 9 are where a script can look fine on paper
+and still fall flat read aloud — that's what happened to "The Potluck"
+v1/v2. 12 is a pitch-time decision (which beat earns the effect) even
+though it's a build detail. 11 is checked at build time, not pitch time.
 
 ## Sources
 
